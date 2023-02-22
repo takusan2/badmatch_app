@@ -1,5 +1,7 @@
 import 'package:badmatch_app/constant/string.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:badmatch_app/view/add_community_page.dart';
+import 'package:badmatch_app/view/member_page.dart';
 import 'package:badmatch_app/view_model/home_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +15,11 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: const Text(appTitle)),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // showModalBottomSheet(context: context, builder: (context) {});
+          showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return const AddCommunityPage();
+              });
         },
         child: const Icon(Icons.add),
       ),
@@ -35,12 +41,18 @@ class HomePage extends StatelessWidget {
                       elevation: 3,
                       child: ListTile(
                         title: Text(community.name),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return MemberPage(community: community);
+                          }));
+                        },
                         trailing: IconButton(
                           onPressed: () {
-                            Provider.of<HomePageViewModel>(context,
-                                    listen: false)
-                                .delete(community);
+                            Provider.of<HomePageViewModel>(
+                              context,
+                              listen: false,
+                            ).delete(community);
                           },
                           icon: const Icon(
                             Icons.delete,
