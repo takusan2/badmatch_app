@@ -191,10 +191,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _rankMeta = const VerificationMeta('rank');
+  static const VerificationMeta _levelMeta = const VerificationMeta('level');
   @override
-  late final GeneratedColumn<int> rank = GeneratedColumn<int>(
-      'rank', aliasedName, false,
+  late final GeneratedColumn<int> level = GeneratedColumn<int>(
+      'level', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _communityIdMeta =
       const VerificationMeta('communityId');
@@ -206,7 +206,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES communities (id)'));
   @override
-  List<GeneratedColumn> get $columns => [id, name, rank, communityId];
+  List<GeneratedColumn> get $columns => [id, name, level, communityId];
   @override
   String get aliasedName => _alias ?? 'members';
   @override
@@ -225,11 +225,11 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('rank')) {
+    if (data.containsKey('level')) {
       context.handle(
-          _rankMeta, rank.isAcceptableOrUnknown(data['rank']!, _rankMeta));
+          _levelMeta, level.isAcceptableOrUnknown(data['level']!, _levelMeta));
     } else if (isInserting) {
-      context.missing(_rankMeta);
+      context.missing(_levelMeta);
     }
     if (data.containsKey('community_id')) {
       context.handle(
@@ -252,8 +252,8 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      rank: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}rank'])!,
+      level: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}level'])!,
       communityId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}community_id'])!,
     );
@@ -268,19 +268,19 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
 class Member extends DataClass implements Insertable<Member> {
   final int id;
   final String name;
-  final int rank;
+  final int level;
   final int communityId;
   const Member(
       {required this.id,
       required this.name,
-      required this.rank,
+      required this.level,
       required this.communityId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['rank'] = Variable<int>(rank);
+    map['level'] = Variable<int>(level);
     map['community_id'] = Variable<int>(communityId);
     return map;
   }
@@ -289,7 +289,7 @@ class Member extends DataClass implements Insertable<Member> {
     return MembersCompanion(
       id: Value(id),
       name: Value(name),
-      rank: Value(rank),
+      level: Value(level),
       communityId: Value(communityId),
     );
   }
@@ -300,7 +300,7 @@ class Member extends DataClass implements Insertable<Member> {
     return Member(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      rank: serializer.fromJson<int>(json['rank']),
+      level: serializer.fromJson<int>(json['level']),
       communityId: serializer.fromJson<int>(json['communityId']),
     );
   }
@@ -310,16 +310,16 @@ class Member extends DataClass implements Insertable<Member> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'rank': serializer.toJson<int>(rank),
+      'level': serializer.toJson<int>(level),
       'communityId': serializer.toJson<int>(communityId),
     };
   }
 
-  Member copyWith({int? id, String? name, int? rank, int? communityId}) =>
+  Member copyWith({int? id, String? name, int? level, int? communityId}) =>
       Member(
         id: id ?? this.id,
         name: name ?? this.name,
-        rank: rank ?? this.rank,
+        level: level ?? this.level,
         communityId: communityId ?? this.communityId,
       );
   @override
@@ -327,53 +327,53 @@ class Member extends DataClass implements Insertable<Member> {
     return (StringBuffer('Member(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('rank: $rank, ')
+          ..write('level: $level, ')
           ..write('communityId: $communityId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, rank, communityId);
+  int get hashCode => Object.hash(id, name, level, communityId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Member &&
           other.id == this.id &&
           other.name == this.name &&
-          other.rank == this.rank &&
+          other.level == this.level &&
           other.communityId == this.communityId);
 }
 
 class MembersCompanion extends UpdateCompanion<Member> {
   final Value<int> id;
   final Value<String> name;
-  final Value<int> rank;
+  final Value<int> level;
   final Value<int> communityId;
   const MembersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.rank = const Value.absent(),
+    this.level = const Value.absent(),
     this.communityId = const Value.absent(),
   });
   MembersCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required int rank,
+    required int level,
     required int communityId,
   })  : name = Value(name),
-        rank = Value(rank),
+        level = Value(level),
         communityId = Value(communityId);
   static Insertable<Member> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<int>? rank,
+    Expression<int>? level,
     Expression<int>? communityId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (rank != null) 'rank': rank,
+      if (level != null) 'level': level,
       if (communityId != null) 'community_id': communityId,
     });
   }
@@ -381,12 +381,12 @@ class MembersCompanion extends UpdateCompanion<Member> {
   MembersCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<int>? rank,
+      Value<int>? level,
       Value<int>? communityId}) {
     return MembersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      rank: rank ?? this.rank,
+      level: level ?? this.level,
       communityId: communityId ?? this.communityId,
     );
   }
@@ -400,8 +400,8 @@ class MembersCompanion extends UpdateCompanion<Member> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (rank.present) {
-      map['rank'] = Variable<int>(rank.value);
+    if (level.present) {
+      map['level'] = Variable<int>(level.value);
     }
     if (communityId.present) {
       map['community_id'] = Variable<int>(communityId.value);
@@ -414,7 +414,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     return (StringBuffer('MembersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('rank: $rank, ')
+          ..write('level: $level, ')
           ..write('communityId: $communityId')
           ..write(')'))
         .toString();

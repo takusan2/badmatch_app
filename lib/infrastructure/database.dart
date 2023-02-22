@@ -22,18 +22,31 @@ class MyDatabase extends _$MyDatabase {
   Future<List<Member>> get allMemberEntries => select(members).get();
   Future<List<Community>> get allCommuntyEntries => select(communities).get();
 
-  Future<int> insertMember(MembersCompanion entry) =>
-      into(members).insert(entry);
   Future<int> insertCommunity(CommunitiesCompanion entry) =>
       into(communities).insert(entry);
+  Future<int> insertMember(MembersCompanion entry) =>
+      into(members).insert(entry);
 
   Future<void> deleteCommunity(Community community) {
-    return (delete(communities)..where((cbl) => cbl.id.equals(community.id)))
-        .go();
+    return (delete(communities)..where((t) => t.id.equals(community.id))).go();
+  }
+
+  Future<void> deleteMember(Member member) {
+    return (delete(members)..where((t) => t.id.equals(member.id))).go();
+  }
+
+  Future<void> updateMember(
+      {required Member member, required String name, required int level}) {
+    return (update(members)..where((t) => t.id.equals(member.id)))
+        .write(MembersCompanion(
+      name: Value(name),
+      level: Value(level),
+    ));
   }
 
   Future<List<Member>> getMembersByCommunityId(int communityId) {
-    return (select(members)..where((t) => t.id.equals(communityId))).get();
+    return (select(members)..where((t) => t.communityId.equals(communityId)))
+        .get();
   }
 }
 
