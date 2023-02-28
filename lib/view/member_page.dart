@@ -56,86 +56,10 @@ class MemberPage extends HookWidget {
                                   final TextEditingController controller =
                                       TextEditingController();
                                   controller.text = member.name;
-                                  return Dismissible(
-                                    key: ObjectKey(member),
-                                    confirmDismiss: (direction) async {
-                                      if (direction ==
-                                          DismissDirection.endToStart) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text("削除しました"),
-                                            duration: Duration(seconds: 1),
-                                          ),
-                                        );
-                                        await Provider.of<MemberPageViewModel>(
-                                          context,
-                                          listen: false,
-                                        ).delete(member);
-                                      }
-                                      return false;
-                                    },
-                                    background: Container(
-                                      color: Colors.red,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: const Align(
-                                          alignment: Alignment.centerRight,
-                                          child:
-                                              Icon(Icons.delete_sweep_rounded)),
-                                    ),
-                                    direction: DismissDirection.endToStart,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          (index + 1).toString(),
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Expanded(
-                                          flex: 5,
-                                          child: Focus(
-                                            onFocusChange: (onFocus) async {
-                                              if (!onFocus) {
-                                                await Provider.of<
-                                                    MemberPageViewModel>(
-                                                  context,
-                                                  listen: false,
-                                                ).updateName(
-                                                  member: member,
-                                                  name: controller.text,
-                                                );
-                                              }
-                                            },
-                                            child: TextFormField(
-                                              controller: controller,
-                                              decoration: const InputDecoration(
-                                                  labelText: '名前'),
-                                            ),
-                                          ),
-                                        ),
-                                        const Expanded(
-                                            flex: 1, child: SizedBox()),
-                                        Expanded(
-                                          flex: 1,
-                                          child: LevelDropdown(
-                                            defaultValue: member.level,
-                                            onChange: (level) async {
-                                              await Provider.of<
-                                                  MemberPageViewModel>(
-                                                context,
-                                                listen: false,
-                                              ).updateLevel(
-                                                member: member,
-                                                level: level!,
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                  return MemberInput(
+                                    member: member,
+                                    controller: controller,
+                                    index: index,
                                   );
                                 },
                               ),
@@ -184,16 +108,110 @@ class MemberPage extends HookWidget {
                   backgroundColor: MaterialStatePropertyAll(Colors.orange),
                 ),
                 onPressed: () {},
-                child: Container(
-                  child: const Text(
-                    '試合を組む',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                child: const Text(
+                  '試合を組む',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               )
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class MemberInput extends StatelessWidget {
+  const MemberInput({
+    super.key,
+    required this.member,
+    required this.controller,
+    required this.index,
+  });
+
+  final int index;
+  final Member member;
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: ObjectKey(member),
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.endToStart) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("削除しました"),
+              duration: Duration(seconds: 1),
+            ),
+          );
+          await Provider.of<MemberPageViewModel>(
+            context,
+            listen: false,
+          ).delete(member);
+        }
+        return false;
+      },
+      background: Container(
+        color: Colors.red,
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: const Align(
+            alignment: Alignment.centerRight,
+            child: Icon(Icons.delete_sweep_rounded)),
+      ),
+      direction: DismissDirection.endToStart,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            (index + 1).toString(),
+            style: const TextStyle(fontSize: 16),
+          ),
+          Checkbox(
+            onChanged: (value) {},
+            value: true,
+          ),
+          const SizedBox(width: 10.0),
+          Expanded(
+            flex: 5,
+            child: Focus(
+              onFocusChange: (onFocus) async {
+                if (!onFocus) {
+                  await Provider.of<MemberPageViewModel>(
+                    context,
+                    listen: false,
+                  ).updateName(
+                    member: member,
+                    name: controller.text,
+                  );
+                }
+              },
+              child: TextFormField(
+                controller: controller,
+                decoration: const InputDecoration(labelText: '名前'),
+              ),
+            ),
+          ),
+          const Expanded(
+            flex: 1,
+            child: SizedBox(),
+          ),
+          Expanded(
+            flex: 1,
+            child: LevelDropdown(
+              defaultValue: member.level,
+              onChange: (level) async {
+                await Provider.of<MemberPageViewModel>(
+                  context,
+                  listen: false,
+                ).updateLevel(
+                  member: member,
+                  level: level!,
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
