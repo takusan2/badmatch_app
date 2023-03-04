@@ -1,16 +1,16 @@
 import 'package:badmatch_app/infrastructure/database.dart';
-import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
+import 'package:badmatch_app/repository/member_repository.dart';
 
-class MemberPageViewModel extends ChangeNotifier {
-  MemberPageViewModel({required this.database});
+class MemberPageViewModel {
+  final MemberRepository memberRepository =
+      MemberRepository(MyDatabase().memberAccessor);
 
-  final MyDatabase database;
+  Future<List<Member>> getCommunityMembers(int communityId) async {
+    return await memberRepository.getCommunityMembers(communityId);
+  }
 
-  Future<List<Member>> get allMember async => await database.allMemberEntries;
-
-  Future<List<Member>> memberList(int communityId) async {
-    return await database.getMembersByCommunityId(communityId);
+  Stream<List<Member>> watchCommunityMembers(int communityId) {
+    return memberRepository.watchCommunityMembers(communityId);
   }
 
   Future<void> insert({
@@ -18,26 +18,22 @@ class MemberPageViewModel extends ChangeNotifier {
     required int level,
     required int communityId,
   }) async {
-    await database.insertMember(
-      MembersCompanion(
-        name: Value(name),
-        level: Value(level),
-        communityId: Value(communityId),
-      ),
+    await memberRepository.insertMember(
+      name: name,
+      level: level,
+      communityId: communityId,
     );
-    notifyListeners();
   }
 
   Future<void> delete(Member member) async {
-    await database.deleteMember(member);
-    notifyListeners();
+    await memberRepository.deleteMember(member: member);
   }
 
   Future<void> updateName({
     required Member member,
     required String name,
   }) async {
-    await database.updateMember(
+    await memberRepository.updateMember(
       member: member,
       name: name,
       level: member.level,
@@ -48,11 +44,10 @@ class MemberPageViewModel extends ChangeNotifier {
     required Member member,
     required int level,
   }) async {
-    await database.updateMember(
+    await memberRepository.updateMember(
       member: member,
       name: member.name,
       level: level,
     );
-    notifyListeners();
   }
 }

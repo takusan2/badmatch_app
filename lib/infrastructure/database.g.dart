@@ -431,3 +431,11 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [communities, members];
 }
+
+mixin _$CommunityAccessorMixin on DatabaseAccessor<MyDatabase> {
+  $CommunitiesTable get communities => attachedDatabase.communities;
+}
+mixin _$MemberAccessorMixin on DatabaseAccessor<MyDatabase> {
+  $CommunitiesTable get communities => attachedDatabase.communities;
+  $MembersTable get members => attachedDatabase.members;
+}

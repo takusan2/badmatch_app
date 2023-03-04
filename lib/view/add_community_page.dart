@@ -1,11 +1,10 @@
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/view_model/home_page_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AddCommunityPage extends StatelessWidget {
-  const AddCommunityPage({super.key});
-
+  final HomePageViewModel vm;
+  const AddCommunityPage({super.key, required this.vm});
   @override
   Widget build(BuildContext context) {
     String communityName = '';
@@ -37,12 +36,10 @@ class AddCommunityPage extends StatelessWidget {
             Container(
               decoration: kBoxDecoration,
               child: TextButton(
-                onPressed: () {
-                  Provider.of<HomePageViewModel>(
-                    context,
-                    listen: false,
-                  ).insert(name: communityName);
-                  Navigator.pop(context);
+                onPressed: () async {
+                  await vm
+                      .insert(name: communityName)
+                      .then((_) => Navigator.pop(context));
                 },
                 child: const Text(
                   '追加',

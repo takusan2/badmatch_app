@@ -1,27 +1,19 @@
 import 'package:badmatch_app/infrastructure/database.dart';
-import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
+import 'package:badmatch_app/repository/community_repository.dart';
 
-class HomePageViewModel extends ChangeNotifier {
-  final MyDatabase database;
-  HomePageViewModel({required this.database});
+class HomePageViewModel {
+  final CommunityRepository communityRepository =
+      CommunityRepository(MyDatabase().communityAccessor);
 
-  List<Community> _communityList = [];
-
-  Future<List<Community>> _fetchCommunity() async {
-    _communityList = await database.allCommuntyEntries;
-    return _communityList;
+  Stream<List<Community>> watachCommunities() {
+    return communityRepository.watchCommunities();
   }
 
-  Future<List<Community>> get communityList async => await _fetchCommunity();
-
   Future<void> insert({required String name}) async {
-    await database.insertCommunity(CommunitiesCompanion(name: Value(name)));
-    notifyListeners();
+    await communityRepository.insertCommunity(name: name);
   }
 
   Future<void> delete(Community community) async {
-    await database.deleteCommunity(community);
-    notifyListeners();
+    await communityRepository.deleteCommunity(community);
   }
 }

@@ -1,16 +1,18 @@
 import 'package:badmatch_app/constant/config.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:badmatch_app/view/match_result_page.dart';
 import 'package:badmatch_app/view_model/member_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 class MemberPage extends HookWidget {
-  const MemberPage({super.key, required this.community});
   final Community community;
+  const MemberPage({super.key, required this.community});
 
   @override
   Widget build(BuildContext context) {
+    final MemberPageViewModel vm = useMemoized(() => MemberPageViewModel(), []);
     ScrollController scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(title: Text(community.name)),
@@ -32,10 +34,8 @@ class MemberPage extends HookWidget {
                   controller: scrollController,
                   child: Column(
                     children: [
-                      FutureBuilder(
-                        future: Provider.of<MemberPageViewModel>(context,
-                                listen: true)
-                            .memberList(community.id),
+                      StreamBuilder(
+                        stream: vm.watchCommunityMembers(community.id),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return const Center(
@@ -107,7 +107,14 @@ class MemberPage extends HookWidget {
                 style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(Colors.orange),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MatchResulePage(),
+                    ),
+                  );
+                },
                 child: const Text(
                   '試合を組む',
                   style: TextStyle(fontWeight: FontWeight.bold),

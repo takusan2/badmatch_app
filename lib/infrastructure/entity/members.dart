@@ -1,4 +1,4 @@
-import 'package:badmatch_app/infrastructure/table/communities.dart';
+import 'package:badmatch_app/infrastructure/entity/communities.dart';
 import 'package:drift/drift.dart';
 
 class Members extends Table {
