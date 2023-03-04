@@ -4,11 +4,10 @@ import 'package:badmatch_app/view/add_community_page.dart';
 import 'package:badmatch_app/view/member_page.dart';
 import 'package:badmatch_app/view_model/home_page_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
+  HomePage({super.key});
+  final HomePageViewModel vm = HomePageViewModel();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,19 +15,21 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return const AddCommunityPage();
-              });
+            context: context,
+            builder: (context) {
+              return AddCommunityPage(vm: vm);
+            },
+          );
         },
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
-        child: FutureBuilder<List<Community>>(
-          future: Provider.of<HomePageViewModel>(context, listen: true)
-              .communityList,
+        child: StreamBuilder<List<Community>>(
+          stream: vm.watachCommunities(),
           builder: (context, AsyncSnapshot<List<Community>> snapshot) {
-            if (snapshot.hasData) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
               if (snapshot.data == null) {
                 return Container();
               } else {
@@ -49,10 +50,7 @@ class HomePage extends StatelessWidget {
                         },
                         trailing: IconButton(
                           onPressed: () {
-                            Provider.of<HomePageViewModel>(
-                              context,
-                              listen: false,
-                            ).delete(community);
+                            vm.delete(community);
                           },
                           icon: const Icon(
                             Icons.delete,
@@ -64,8 +62,6 @@ class HomePage extends StatelessWidget {
                   },
                 );
               }
-            } else {
-              return const Center(child: CircularProgressIndicator());
             }
           },
         ),
