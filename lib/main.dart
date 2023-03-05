@@ -2,14 +2,7 @@ import 'package:badmatch_app/view/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-  runApp(
-      // MultiProvider(
-      //   providers: [
-      //     Provider<MyDatabase>(create: ((context) => MyDatabase.instans))
-      //   ],
-      //   child: const MyApp(),
-      // ),
-      const MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

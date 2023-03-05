@@ -4,7 +4,6 @@ import 'package:badmatch_app/view/match_result_page.dart';
 import 'package:badmatch_app/view_model/member_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:provider/provider.dart';
 
 class MemberPage extends HookWidget {
   final Community community;
@@ -60,6 +59,7 @@ class MemberPage extends HookWidget {
                                     member: member,
                                     controller: controller,
                                     index: index,
+                                    vm: vm,
                                   );
                                 },
                               ),
@@ -86,9 +86,7 @@ class MemberPage extends HookWidget {
                             duration: const Duration(seconds: 1),
                             curve: Curves.linear,
                           );
-                          await Provider.of<MemberPageViewModel>(context,
-                                  listen: false)
-                              .insert(
+                          await vm.insert(
                             name: '',
                             level: 1,
                             communityId: community.id,
@@ -129,16 +127,17 @@ class MemberPage extends HookWidget {
 }
 
 class MemberInput extends StatelessWidget {
-  const MemberInput({
-    super.key,
-    required this.member,
-    required this.controller,
-    required this.index,
-  });
-
   final int index;
   final Member member;
   final TextEditingController controller;
+  final MemberPageViewModel vm;
+
+  const MemberInput(
+      {super.key,
+      required this.member,
+      required this.controller,
+      required this.index,
+      required this.vm});
 
   @override
   Widget build(BuildContext context) {
@@ -152,10 +151,7 @@ class MemberInput extends StatelessWidget {
               duration: Duration(seconds: 1),
             ),
           );
-          await Provider.of<MemberPageViewModel>(
-            context,
-            listen: false,
-          ).delete(member);
+          await vm.delete(member);
         }
         return false;
       },
@@ -184,10 +180,7 @@ class MemberInput extends StatelessWidget {
             child: Focus(
               onFocusChange: (onFocus) async {
                 if (!onFocus) {
-                  await Provider.of<MemberPageViewModel>(
-                    context,
-                    listen: false,
-                  ).updateName(
+                  await vm.updateName(
                     member: member,
                     name: controller.text,
                   );
@@ -208,10 +201,7 @@ class MemberInput extends StatelessWidget {
             child: LevelDropdown(
               defaultValue: member.level,
               onChange: (level) async {
-                await Provider.of<MemberPageViewModel>(
-                  context,
-                  listen: false,
-                ).updateLevel(
+                await vm.updateLevel(
                   member: member,
                   level: level!,
                 );
