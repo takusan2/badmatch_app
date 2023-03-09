@@ -532,37 +532,25 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
   @override
   late final GeneratedColumn<int> player1Id = GeneratedColumn<int>(
       'player1_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES members (id) ON DELETE CASCADE'));
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _player2IdMeta =
       const VerificationMeta('player2Id');
   @override
   late final GeneratedColumn<int> player2Id = GeneratedColumn<int>(
       'player2_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES members (id) ON DELETE CASCADE'));
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _player3IdMeta =
       const VerificationMeta('player3Id');
   @override
   late final GeneratedColumn<int> player3Id = GeneratedColumn<int>(
       'player3_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES members (id) ON DELETE CASCADE'));
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _player4IdMeta =
       const VerificationMeta('player4Id');
   @override
   late final GeneratedColumn<int> player4Id = GeneratedColumn<int>(
       'player4_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES members (id) ON DELETE CASCADE'));
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _communityIdMeta =
       const VerificationMeta('communityId');
   @override
@@ -906,34 +894,6 @@ abstract class _$MyDatabase extends GeneratedDatabase {
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('members',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('matches', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('members',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('matches', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('members',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('matches', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('members',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('matches', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
             on: TableUpdateQuery.onTableName('communities',
                 limitUpdateKind: UpdateKind.delete),
             result: [
@@ -949,7 +909,6 @@ mixin _$CommunityAccessorMixin on DatabaseAccessor<MyDatabase> {
 }
 mixin _$MatchAccessorMixin on DatabaseAccessor<MyDatabase> {
   $CommunitiesTable get communities => attachedDatabase.communities;
-  $MembersTable get members => attachedDatabase.members;
   $MatchesTable get matches => attachedDatabase.matches;
 }
 mixin _$MemberAccessorMixin on DatabaseAccessor<MyDatabase> {

@@ -63,7 +63,7 @@ class AddCommunityPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10.0),
                     Container(
-                      decoration: kBoxDecoration,
+                      decoration: kButtonDecoration,
                       child: FilledButton(
                         onPressed: () async {
                           await vm

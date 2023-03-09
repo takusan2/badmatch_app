@@ -8,6 +8,10 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
   Future<int> insertMember({required MembersCompanion membersCompanion}) =>
       into(members).insert(membersCompanion);
 
+  Future<List<Member>> getAllMembers() {
+    return (select(members)).get();
+  }
+
   Future<List<Member>> getCommunityMembers(int communityId) {
     return (select(members)..where((t) => t.communityId.equals(communityId)))
         .get();

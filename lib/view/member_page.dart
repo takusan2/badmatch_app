@@ -14,7 +14,6 @@ class MemberPage extends StatefulWidget {
 
 class _MemberPageState extends State<MemberPage> {
   final MemberPageViewModel vm = MemberPageViewModel();
-  List<bool> participants = List.generate(3, (index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,9 @@ class _MemberPageState extends State<MemberPage> {
                     child: Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: AddMemberPage(),
+                      child: AddMemberPage(
+                        community: community,
+                      ),
                     ),
                   );
                 },
@@ -81,12 +82,8 @@ class _MemberPageState extends State<MemberPage> {
                               : Colors.red.shade100,
                           elevation: 2,
                           child: CheckboxListTile(
-                            value: participants[index],
-                            onChanged: (value) {
-                              setState(() {
-                                participants[index] = value!;
-                              });
-                            },
+                            value: true,
+                            onChanged: (value) {},
                             title: Row(
                               children: [
                                 Text('Lv.${member.level.toString()}'),

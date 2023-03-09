@@ -28,8 +28,8 @@ class MyDatabase extends _$MyDatabase {
   @override
   int get schemaVersion => 1;
 
-  MemberAccessor get memberAccessor => MemberAccessor(this);
-  CommunityAccessor get communityAccessor => CommunityAccessor(this);
+  MemberAccessor get memberAccessor => MemberAccessor(_instance);
+  CommunityAccessor get communityAccessor => CommunityAccessor(_instance);
 }
 
 LazyDatabase _openConnection() {
