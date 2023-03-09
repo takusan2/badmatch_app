@@ -5,16 +5,12 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
     with _$MemberAccessorMixin {
   MemberAccessor(MyDatabase db) : super(db);
 
-  Future<int> insertMember(
-          {required String name,
-          required int level,
-          required int communityId}) =>
-      into(members).insert(
-        MembersCompanion(
-            name: Value(name),
-            level: Value(level),
-            communityId: Value(communityId)),
-      );
+  Future<int> insertMember({required MembersCompanion membersCompanion}) =>
+      into(members).insert(membersCompanion);
+
+  Future<List<Member>> getAllMembers() {
+    return (select(members)).get();
+  }
 
   Future<List<Member>> getCommunityMembers(int communityId) {
     return (select(members)..where((t) => t.communityId.equals(communityId)))
@@ -28,14 +24,10 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
 
   Future<void> updateMember({
     required Member member,
-    required String name,
-    required int level,
+    required MembersCompanion membersCompanion,
   }) {
     return (update(members)..where((t) => t.id.equals(member.id))).write(
-      MembersCompanion(
-        name: Value(name),
-        level: Value(level),
-      ),
+      membersCompanion,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:badmatch_app/constant/string.dart';
+import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/view/add_community_page.dart';
 import 'package:badmatch_app/view/member_page.dart';
@@ -11,13 +12,27 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(appTitle)),
+      appBar: AppBar(
+        title: const Text(
+          appTitle,
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: kAppBarColor,
+        shape: kAppBarShape,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
             context: context,
+            isScrollControlled: true,
             builder: (context) {
-              return AddCommunityPage(vm: vm);
+              return SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: AddCommunityPage(vm: vm),
+                ),
+              );
             },
           );
         },
@@ -38,23 +53,68 @@ class HomePage extends StatelessWidget {
                   itemCount: communityList.length,
                   itemBuilder: (context, index) {
                     Community community = communityList[index];
-                    return Card(
-                      elevation: 3,
-                      child: ListTile(
-                        title: Text(community.name),
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return MemberPage(community: community);
-                          }));
-                        },
-                        trailing: IconButton(
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(top: 20, left: 20, right: 20),
+                      child: Card(
+                        elevation: 5,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child: TextButton(
                           onPressed: () {
-                            vm.delete(community);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return MemberPage(community: community);
+                            }));
                           },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF454444),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                height: 40,
+                                child: Text(
+                                  community.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFFD6D6),
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
+                                  ),
+                                ),
+                                height: 60,
+                                child: ListTile(
+                                  // title: Text(community.name),
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      vm.delete(community);
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
