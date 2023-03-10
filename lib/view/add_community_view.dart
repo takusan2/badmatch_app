@@ -1,13 +1,12 @@
 import 'package:badmatch_app/constant/style.dart';
-import 'package:badmatch_app/view_model/home_page_view_model.dart';
+import 'package:badmatch_app/view_model/add_community_view_model.dart';
 import 'package:flutter/material.dart';
 
-class AddCommunityPage extends StatelessWidget {
-  final HomePageViewModel vm;
-  const AddCommunityPage({super.key, required this.vm});
+class AddCommunityView extends StatelessWidget {
+  const AddCommunityView({super.key});
   @override
   Widget build(BuildContext context) {
-    String communityName = '';
+    AddCommunityViewModel vm = AddCommunityViewModel();
     return SafeArea(
       child: Container(
         color: const Color(0xFF757575),
@@ -56,7 +55,7 @@ class AddCommunityPage extends StatelessWidget {
                           flex: 4,
                           child: TextField(
                             autofocus: true,
-                            onChanged: (value) => communityName = value,
+                            onChanged: (value) => vm.communityName = value,
                           ),
                         ),
                       ],
@@ -67,7 +66,7 @@ class AddCommunityPage extends StatelessWidget {
                       child: FilledButton(
                         onPressed: () async {
                           await vm
-                              .insert(name: communityName)
+                              .insertCommunity()
                               .then((_) => Navigator.pop(context));
                         },
                         child: const Text(

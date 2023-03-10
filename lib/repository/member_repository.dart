@@ -36,12 +36,15 @@ class MemberRepository {
     SexEnum? sex,
     int? level,
     int? age,
+    bool? isParticipant,
   }) {
     MembersCompanion membersCompanion = MembersCompanion(
       name: name != null ? Value(name) : const Value.absent(),
       sex: sex != null ? Value(sex) : const Value.absent(),
       age: age != null ? Value(age) : const Value.absent(),
       level: level != null ? Value(level) : const Value.absent(),
+      isParticipant:
+          isParticipant != null ? Value(isParticipant) : const Value.absent(),
     );
     return _memberAccessor.updateMember(
       member: member,

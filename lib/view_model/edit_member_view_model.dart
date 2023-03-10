@@ -1,23 +1,25 @@
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
 import 'package:badmatch_app/repository/member_repository.dart';
+import 'package:flutter/material.dart';
 
-class AddMemberPageViewModel {
+class EditMemberViewModel {
   final MemberRepository memberRepository =
       MemberRepository(MyDatabase().memberAccessor);
+  final formKey = GlobalKey<FormState>();
 
-  Future<void> insert(
-      {required String name,
-      required SexEnum sex,
-      required int level,
-      required int communityId,
-      int? age}) async {
-    await memberRepository.insertMember(
+  String? name;
+  SexEnum? sex;
+  int? level;
+  int? age;
+
+  Future<void> updateMember(Member member) async {
+    await memberRepository.updateMember(
+      member: member,
       name: name,
       sex: sex,
       level: level,
       age: age,
-      communityId: communityId,
     );
   }
 }

@@ -1,19 +1,17 @@
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/repository/community_repository.dart';
 
-class HomePageViewModel {
+class HomeViewModel {
   final CommunityRepository communityRepository =
       CommunityRepository(MyDatabase().communityAccessor);
+
+  bool editFlag = true;
 
   Stream<List<Community>> watachCommunities() {
     return communityRepository.watchCommunities();
   }
 
-  Future<void> insert({required String name}) async {
-    await communityRepository.insertCommunity(name: name);
-  }
-
-  Future<void> delete(Community community) async {
+  Future<void> deleteCommunity(Community community) async {
     await communityRepository.deleteCommunity(community);
   }
 }

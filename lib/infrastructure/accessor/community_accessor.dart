@@ -8,9 +8,11 @@ class CommunityAccessor extends DatabaseAccessor<MyDatabase>
   Future<List<Community>> get getCommunties => select(communities).get();
 
   Future<int> insertCommunity({required String name}) =>
-      into(communities).insert(CommunitiesCompanion(
-        name: Value(name),
-      ));
+      into(communities).insert(
+        CommunitiesCompanion(
+          name: Value(name),
+        ),
+      );
 
   Stream<List<Community>> watchCommunities() => select(communities).watch();
 
@@ -19,9 +21,9 @@ class CommunityAccessor extends DatabaseAccessor<MyDatabase>
 
   Future<void> updateCommunity({
     required Community community,
-    required String name,
+    required CommunitiesCompanion communitiesCompanion,
   }) {
     return (update(communities)..where((t) => t.id.equals(community.id)))
-        .write(CommunitiesCompanion(name: Value(name)));
+        .write(communitiesCompanion);
   }
 }

@@ -10,6 +10,8 @@ class Members extends Table {
   IntColumn get age => integer().nullable()();
   IntColumn get level =>
       integer().customConstraint('CHECK (level BETWEEN 1 AND 5)')();
+  BoolColumn get isParticipant =>
+      boolean().withDefault(const Constant(false))();
   IntColumn get communityId =>
       integer().references(Communities, #id, onDelete: KeyAction.cascade)();
 }
