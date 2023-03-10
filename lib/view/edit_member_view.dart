@@ -4,16 +4,22 @@ import 'package:badmatch_app/constant/config.dart';
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
-import 'package:badmatch_app/view_model/add_member_view_model.dart';
+import 'package:badmatch_app/view_model/edit_member_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class AddMemberView extends StatelessWidget {
-  final Community community;
-  const AddMemberView({super.key, required this.community});
+class EditMemberView extends StatefulWidget {
+  final Member member;
+  const EditMemberView({super.key, required this.member});
 
-  DropdownButton<int> androidDropdown({required AddMemberViewModel vm}) {
+  @override
+  State<EditMemberView> createState() => _EditMemberViewState();
+}
+
+class _EditMemberViewState extends State<EditMemberView> {
+  EditMemberViewModel vm = EditMemberViewModel();
+
+  DropdownButton<int> androidDropdown({required int defaultLevel}) {
     List<DropdownMenuItem<int>> dropdownItems = kLevelList
         .map(
           (int value) => (DropdownMenuItem(
@@ -24,7 +30,7 @@ class AddMemberView extends StatelessWidget {
         .toList();
 
     return DropdownButton<int>(
-      value: vm.level,
+      value: defaultLevel,
       items: dropdownItems,
       onChanged: (value) {
         vm.level = value!;
@@ -32,11 +38,13 @@ class AddMemberView extends StatelessWidget {
     );
   }
 
-  CupertinoPicker iOSPicker({required AddMemberViewModel vm}) {
+  CupertinoPicker iOSPicker({required int defaultLevel}) {
     List<Text> pickerItems =
         kLevelList.map((value) => Text('Lv.${value.toString()}')).toList();
 
     return CupertinoPicker(
+      scrollController:
+          FixedExtentScrollController(initialItem: defaultLevel - 1),
       squeeze: 1.2,
       backgroundColor: Colors.white,
       itemExtent: 32.0,
@@ -48,8 +56,14 @@ class AddMemberView extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    vm.sex = widget.member.sex;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    AddMemberViewModel vm = Provider.of<AddMemberViewModel>(context);
+    Member member = widget.member;
     return SafeArea(
       child: Container(
         color: const Color(0xFF757575),
@@ -74,7 +88,9 @@ class AddMemberView extends StatelessWidget {
                         value: SexEnum.male,
                         groupValue: vm.sex,
                         onChanged: (value) {
-                          vm.sex = SexEnum.male;
+                          setState(() {
+                            vm.sex = value;
+                          });
                         },
                       ),
                     ),
@@ -84,7 +100,9 @@ class AddMemberView extends StatelessWidget {
                         value: SexEnum.female,
                         groupValue: vm.sex,
                         onChanged: (value) {
-                          vm.sex = SexEnum.female;
+                          setState(() {
+                            vm.sex = value;
+                          });
                         },
                       ),
                     ),
@@ -96,10 +114,11 @@ class AddMemberView extends StatelessWidget {
                     vertical: 15.0,
                   ),
                   child: Platform.isIOS
-                      ? iOSPicker(vm: vm)
-                      : androidDropdown(vm: vm),
+                      ? iOSPicker(defaultLevel: member.level)
+                      : androidDropdown(defaultLevel: member.level),
                 ),
                 TextFormField(
+                  initialValue: member.name,
                   keyboardType: TextInputType.text,
                   decoration: const InputDecoration(label: Text('名前')),
                   onChanged: (value) => vm.name = value,
@@ -111,6 +130,8 @@ class AddMemberView extends StatelessWidget {
                   },
                 ),
                 TextFormField(
+                    initialValue:
+                        member.age != null ? member.age.toString() : '',
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(label: Text('年齢（任意）')),
                     onChanged: (value) => vm.age = int.parse(value)),
@@ -123,11 +144,11 @@ class AddMemberView extends StatelessWidget {
                           const SnackBar(content: Text('Processing Data')),
                         );
                         await vm
-                            .insertMember(community)
+                            .updateMember(member)
                             .then((value) => Navigator.pop(context));
                       }
                     },
-                    child: const Text('追加', style: kButtonTextStyle),
+                    child: const Text('完了', style: kButtonTextStyle),
                   ),
                 ),
               ],

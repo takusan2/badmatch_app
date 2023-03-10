@@ -1,4 +1,5 @@
 import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:drift/drift.dart';
 
 class CommunityRepository {
   final CommunityAccessor _communityAccessor;
@@ -17,7 +18,12 @@ class CommunityRepository {
 
   Future<void> updateCommunity({
     required Community community,
-    required String name,
-  }) =>
-      _communityAccessor.updateCommunity(community: community, name: name);
+    String? name,
+  }) {
+    return _communityAccessor.updateCommunity(
+        community: community,
+        communitiesCompanion: CommunitiesCompanion(
+          name: name != null ? Value(name) : const Value.absent(),
+        ));
+  }
 }
