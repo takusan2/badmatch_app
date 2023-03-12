@@ -17,6 +17,13 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
         .get();
   }
 
+  Future<List<Member>> getParticipants(int communityId) {
+    return (select(members)
+          ..where((t) => t.communityId.equals(communityId))
+          ..where((t) => t.isParticipant.equals(true)))
+        .get();
+  }
+
   Stream<List<Member>> watchCommunityMembers(int communityId) {
     return (select(members)..where((t) => t.communityId.equals(communityId)))
         .watch();

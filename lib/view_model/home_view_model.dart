@@ -5,7 +5,7 @@ class HomeViewModel {
   final CommunityRepository communityRepository =
       CommunityRepository(MyDatabase().communityAccessor);
 
-  bool editFlag = true;
+  bool editFlag = false;
 
   Stream<List<Community>> watachCommunities() {
     return communityRepository.watchCommunities();

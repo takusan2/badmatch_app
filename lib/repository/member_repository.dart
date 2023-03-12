@@ -72,4 +72,29 @@ class MemberRepository {
       await _memberAccessor.deleteMember(member);
     }
   }
+
+  Future<List<Member>> getParticipants(Community community) async {
+    return await _memberAccessor.getParticipants(community.id);
+  }
+
+  Future<List<Member>> getCandidates(Community community) async {
+    List<Member> participantList =
+        await _memberAccessor.getParticipants(community.id);
+    participantList.shuffle();
+    participantList.sort(((a, b) => a.level.compareTo(b.level)));
+    return participantList;
+    // participantList.sort(((a, b) => a.level.compareTo(b.level)));
+  }
+
+  Future<List<List<Member>>> getPlayersList({
+    required Community community,
+    required int numCourt,
+  }) async {
+    List<List<Member>> playerList = [];
+    List<Member> candidateList = await getCandidates(community);
+    for (int i = 0; i < numCourt; i++) {
+      playerList.add(candidateList.sublist(i * 4, i * 4 + 4));
+    }
+    return playerList;
+  }
 }

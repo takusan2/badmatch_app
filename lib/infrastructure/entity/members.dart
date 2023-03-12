@@ -9,9 +9,10 @@ class Members extends Table {
   IntColumn get sex => intEnum<SexEnum>()();
   IntColumn get age => integer().nullable()();
   IntColumn get level =>
-      integer().customConstraint('CHECK (level BETWEEN 1 AND 5)')();
+      integer().customConstraint('NOT NULL CHECK (level BETWEEN 1 AND 5)')();
   BoolColumn get isParticipant =>
       boolean().withDefault(const Constant(false))();
+  IntColumn get numMatch => integer().withDefault(const Constant(0))();
   IntColumn get communityId =>
       integer().references(Communities, #id, onDelete: KeyAction.cascade)();
 }

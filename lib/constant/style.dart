@@ -16,3 +16,8 @@ const kAppBarColor = Color(0xFF99DDA8);
 const kAppBarShape = RoundedRectangleBorder(
   borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
 );
+
+const kPlayerTextStyle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.bold,
+);
