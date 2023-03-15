@@ -1,12 +1,14 @@
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
+import 'package:badmatch_app/model/advanced_member.dart';
 import 'package:badmatch_app/view/add_member_page.dart';
 import 'package:badmatch_app/view/edit_member_view.dart';
-import 'package:badmatch_app/view/match_view.dart';
+import 'package:badmatch_app/view/match_config_view.dart';
 import 'package:badmatch_app/view_model/member_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MemberView extends StatefulWidget {
   final Community community;
@@ -17,7 +19,6 @@ class MemberView extends StatefulWidget {
 
 class _MemberViewState extends State<MemberView> {
   final MemberViewModel vm = MemberViewModel();
-  bool editFlag = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +34,8 @@ class _MemberViewState extends State<MemberView> {
         actions: [
           IconButton(
               padding: const EdgeInsets.only(right: 20),
-              onPressed: () => setState(() => editFlag = !editFlag),
-              icon: editFlag
+              onPressed: () => setState(() => vm.editFlag = !vm.editFlag),
+              icon: vm.editFlag
                   ? const Icon(
                       Icons.check,
                       color: Colors.lightBlue,
@@ -74,33 +75,36 @@ class _MemberViewState extends State<MemberView> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: StreamBuilder(
-                  stream: vm.watchCommunityMembers(community.id),
-                  builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                  stream: vm.watchCommunityAdvancedMembers(community.id),
+                  builder:
+                      (context, AsyncSnapshot<List<AdvancedMember>> snapshot) {
                     if (!snapshot.hasData) {
                       return const CircularProgressIndicator();
                     } else {
-                      List<Member> memberList = snapshot.data!;
+                      List<AdvancedMember> advancedMemberList = snapshot.data!;
                       if (snapshot.data == null) {
                         return Container();
                       }
                       return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: memberList.length,
+                        itemCount: advancedMemberList.length,
                         itemBuilder: (context, index) {
-                          Member member = memberList[index];
+                          AdvancedMember advancedMember =
+                              advancedMemberList[index];
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8.0,
                               vertical: 1.0,
                             ),
                             child: Slidable(
+                              key: ObjectKey(advancedMember),
                               endActionPane: ActionPane(
                                 extentRatio: 0.3,
                                 motion: const ScrollMotion(),
                                 children: [
                                   SlidableAction(
                                     onPressed: (context) {
-                                      vm.deleteMember(member);
+                                      vm.deleteMember(advancedMember.member);
                                     },
                                     backgroundColor: const Color(0xFFFE4A49),
                                     foregroundColor: Colors.white,
@@ -109,26 +113,27 @@ class _MemberViewState extends State<MemberView> {
                                   ),
                                 ],
                               ),
-                              key: ObjectKey(member),
                               child: Card(
-                                color: member.sex == SexEnum.male
+                                elevation: 2,
+                                color: advancedMember.sex == SexEnum.male
                                     ? Colors.blue.shade100
                                     : Colors.red.shade100,
-                                elevation: 2,
-                                child: editFlag
+                                child: vm.editFlag
                                     ? ListTile(
-                                        title: Row(
-                                          children: [
-                                            Text(
-                                                'Lv.${member.level.toString()}'),
-                                            const SizedBox(width: 10),
-                                            Text(member.name),
-                                          ],
+                                        title: Text(
+                                          'Lv.${advancedMember.level.toString()}  ${advancedMember.name}',
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         trailing: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
+                                            const Icon(
+                                                FontAwesomeIcons.handshake),
+                                            const SizedBox(width: 10),
+                                            Text(advancedMember.numMatches
+                                                .toString()),
                                             IconButton(
+                                              icon: const Icon(Icons.edit),
                                               onPressed: () {
                                                 showModalBottomSheet(
                                                   context: context,
@@ -143,34 +148,35 @@ class _MemberViewState extends State<MemberView> {
                                                                     .viewInsets
                                                                     .bottom),
                                                         child: EditMemberView(
-                                                          member: member,
+                                                          member: advancedMember
+                                                              .member,
                                                         ),
                                                       ),
                                                     );
                                                   },
                                                 );
                                               },
-                                              icon: const Icon(
-                                                Icons.edit,
-                                              ),
                                             ),
                                           ],
                                         ),
                                       )
                                     : CheckboxListTile(
-                                        value: member.isParticipant,
+                                        value: advancedMember.isParticipant,
                                         onChanged: (value) {
                                           vm.updateMemberIsParticipant(
-                                            member: member,
+                                            member: advancedMember.member,
                                             isParticipant: value!,
                                           );
                                         },
                                         title: Row(
                                           children: [
                                             Text(
-                                                'Lv.${member.level.toString()}'),
+                                                'Lv.${advancedMember.level.toString()}'),
                                             const SizedBox(width: 10),
-                                            Text(member.name),
+                                            Text(
+                                              advancedMember.name,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -185,17 +191,16 @@ class _MemberViewState extends State<MemberView> {
               ),
             ),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MatchView(
-                        community: community,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('試合を始める'))
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const MatchConfigView();
+                  },
+                );
+              },
+              child: const Text('試合設定をする'),
+            )
           ],
         ),
       ),

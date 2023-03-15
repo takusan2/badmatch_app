@@ -11,10 +11,10 @@ class BadmintonCourt extends StatelessWidget {
   const BadmintonCourt({
     super.key,
     required this.height,
-    required this.player1,
-    required this.player2,
-    required this.player3,
-    required this.player4,
+    this.player1 = '',
+    this.player2 = '',
+    this.player3 = '',
+    this.player4 = '',
   });
 
   @override
@@ -33,18 +33,27 @@ class BadmintonCourt extends StatelessWidget {
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                player1,
-                style: kPlayerTextStyle,
-              ),
-              Text(
-                player2,
-                style: kPlayerTextStyle,
-              )
-            ],
-          ),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: player2 != ''
+                  ? [
+                      Text(
+                        player1,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      ),
+                      Text(
+                        player2,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      )
+                    ]
+                  : [
+                      Text(
+                        player1,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      ),
+                    ]),
         ),
         Container(
           width: height * 0.5 * 1.09,
@@ -58,18 +67,28 @@ class BadmintonCourt extends StatelessWidget {
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                player3,
-                style: kPlayerTextStyle,
-              ),
-              Text(
-                player4,
-                style: kPlayerTextStyle,
-              )
-            ],
-          ),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: player4 != ''
+                  ? [
+                      Text(
+                        player3,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      ),
+                      Text(
+                        player4,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      )
+                    ]
+                  : [
+                      Text(
+                        player3,
+                        textAlign: TextAlign.center,
+                        style: kPlayerTextStyle,
+                      ),
+                    ]),
         )
       ],
     );

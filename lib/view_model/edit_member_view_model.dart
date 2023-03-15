@@ -4,8 +4,10 @@ import 'package:badmatch_app/repository/member_repository.dart';
 import 'package:flutter/material.dart';
 
 class EditMemberViewModel {
-  final MemberRepository memberRepository =
-      MemberRepository(MyDatabase().memberAccessor);
+  final MemberRepository memberRepository = MemberRepository(
+    memberAccessor: MyDatabase().memberAccessor,
+    matchAccessor: MyDatabase().matchAccessor,
+  );
   final formKey = GlobalKey<FormState>();
 
   String? name;
