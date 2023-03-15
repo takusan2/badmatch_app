@@ -61,20 +61,17 @@ class AddCommunityView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10.0),
-                    Container(
-                      decoration: kButtonDecoration,
-                      child: FilledButton(
-                        onPressed: () async {
-                          await vm
-                              .insertCommunity()
-                              .then((_) => Navigator.pop(context));
-                        },
-                        child: const Text(
-                          '追加',
-                          style: kButtonTextStyle,
-                        ),
+                    FilledButton(
+                      onPressed: () async {
+                        await vm
+                            .insertCommunity()
+                            .then((_) => Navigator.pop(context));
+                      },
+                      child: const Text(
+                        '追加',
+                        style: kButtonTextStyle,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

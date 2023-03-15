@@ -1,5 +1,6 @@
 import 'package:badmatch_app/constant/string.dart';
 import 'package:badmatch_app/constant/style.dart';
+import 'package:badmatch_app/controller/community_controller.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/view/add_community_view.dart';
 import 'package:badmatch_app/view/edit_community_view.dart';
@@ -7,6 +8,7 @@ import 'package:badmatch_app/view/member_view.dart';
 import 'package:badmatch_app/view_model/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -35,10 +37,7 @@ class _HomeViewState extends State<HomeView> {
                 });
               },
               icon: vm.editFlag
-                  ? const Icon(
-                      Icons.check,
-                      color: Colors.lightBlue,
-                    )
+                  ? const Icon(Icons.check, color: Colors.lightBlue)
                   : const Icon(Icons.edit),
             ),
           )
@@ -106,74 +105,45 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return MemberView(community: community);
-                              }));
+                              Provider.of<CommunityController>(context,
+                                      listen: false)
+                                  .selectedCommunity = community;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return MemberView(community: community);
+                                  },
+                                ),
+                              );
                             },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF454444),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      topRight: Radius.circular(20),
+                            child: CommunityCard(
+                              name: community.name,
+                              trailing: !vm.editFlag
+                                  ? null
+                                  : IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return SingleChildScrollView(
+                                              child: Container(
+                                                padding: EdgeInsets.only(
+                                                  bottom: MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom,
+                                                ),
+                                                child: EditCommunityView(
+                                                  community: community,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
                                     ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  height: 40,
-                                  child: Text(
-                                    community.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFFFD6D6),
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20),
-                                    ),
-                                  ),
-                                  height: 60,
-                                  child: ListTile(
-                                    // title: Text(community.name),
-                                    trailing: vm.editFlag
-                                        ? IconButton(
-                                            onPressed: () {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                builder: (context) {
-                                                  return SingleChildScrollView(
-                                                    child: Container(
-                                                      padding: EdgeInsets.only(
-                                                          bottom: MediaQuery.of(
-                                                                  context)
-                                                              .viewInsets
-                                                              .bottom),
-                                                      child: EditCommunityView(
-                                                        community: community,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(Icons.edit),
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ),
@@ -186,6 +156,62 @@ class _HomeViewState extends State<HomeView> {
           },
         ),
       ),
+    );
+  }
+}
+
+class CommunityCard extends StatelessWidget {
+  final String name;
+  final Widget? trailing;
+  final String? sideNote;
+
+  const CommunityCard({
+    super.key,
+    required this.name,
+    this.trailing,
+    this.sideNote,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          alignment: Alignment.centerLeft,
+          constraints: const BoxConstraints(maxHeight: 50),
+          decoration: const BoxDecoration(
+            color: Color(0xFF454444),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Text(
+            name,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Container(
+          constraints: const BoxConstraints(maxHeight: 60),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFFD6D6),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+          ),
+          child: ListTile(
+            trailing: trailing,
+          ),
+        ),
+      ],
     );
   }
 }

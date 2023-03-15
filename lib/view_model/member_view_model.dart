@@ -1,16 +1,24 @@
 import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:badmatch_app/model/advanced_member.dart';
 import 'package:badmatch_app/repository/member_repository.dart';
 
 class MemberViewModel {
-  final MemberRepository memberRepository =
-      MemberRepository(MyDatabase().memberAccessor);
+  final MemberRepository memberRepository = MemberRepository(
+    memberAccessor: MyDatabase().memberAccessor,
+    matchAccessor: MyDatabase().matchAccessor,
+  );
+  bool editFlag = false;
 
   Future<List<Member>> getCommunityMembers(int communityId) async {
     return await memberRepository.getCommunityMembers(communityId);
   }
 
-  Stream<List<Member>> watchCommunityMembers(int communityId) {
-    return memberRepository.watchCommunityMembers(communityId);
+  Stream<List<AdvancedMember>> watchCommunityAdvancedMembers(int communityId) {
+    return memberRepository.watchCommunityAdvancedMembers(communityId);
+  }
+
+  Future<int> getNumMatches(Member member) {
+    return memberRepository.getNumTodayMemberMatches(member);
   }
 
   Future<void> updateMemberIsParticipant({

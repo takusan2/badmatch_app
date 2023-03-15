@@ -30,6 +30,7 @@ class MyDatabase extends _$MyDatabase {
 
   MemberAccessor get memberAccessor => MemberAccessor(_instance);
   CommunityAccessor get communityAccessor => CommunityAccessor(_instance);
+  MatchAccessor get matchAccessor => MatchAccessor(_instance);
 }
 
 LazyDatabase _openConnection() {

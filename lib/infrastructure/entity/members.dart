@@ -12,7 +12,6 @@ class Members extends Table {
       integer().customConstraint('NOT NULL CHECK (level BETWEEN 1 AND 5)')();
   BoolColumn get isParticipant =>
       boolean().withDefault(const Constant(false))();
-  IntColumn get numMatch => integer().withDefault(const Constant(0))();
   IntColumn get communityId =>
       integer().references(Communities, #id, onDelete: KeyAction.cascade)();
 }

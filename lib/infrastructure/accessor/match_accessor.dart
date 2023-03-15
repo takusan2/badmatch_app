@@ -11,6 +11,21 @@ class MatchAccessor extends DatabaseAccessor<MyDatabase>
   Future<List<Match>> getCommunityMatches(Community community) =>
       (select(matches)..where((t) => t.communityId.equals(community.id))).get();
 
+  Future<List<Match>> getTodayMemberMatches(Member member) {
+    DateTime today = DateTime.now();
+    DateTime startOfDay = DateTime(today.year, today.month, today.day);
+    DateTime endOfDay = startOfDay.add(const Duration(days: 1));
+
+    return (select(matches)
+          ..where((t) => ((t.createdAt
+                  .isBetween(Constant(startOfDay), Constant(endOfDay))) &
+              (t.player1Id.equals(member.id) |
+                  t.player2Id.equals(member.id) |
+                  t.player3Id.equals(member.id) |
+                  t.player4Id.equals(member.id)))))
+        .get();
+  }
+
   Future<void> updateMatch({
     required Match match,
     required MatchesCompanion matchesCompanion,

@@ -222,14 +222,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
             SqlDialect.postgres: '',
           }),
           defaultValue: const Constant(false));
-  static const VerificationMeta _numMatchMeta =
-      const VerificationMeta('numMatch');
-  @override
-  late final GeneratedColumn<int> numMatch = GeneratedColumn<int>(
-      'num_match', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
   static const VerificationMeta _communityIdMeta =
       const VerificationMeta('communityId');
   @override
@@ -241,7 +233,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
           'REFERENCES communities (id) ON DELETE CASCADE'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, sex, age, level, isParticipant, numMatch, communityId];
+      [id, name, sex, age, level, isParticipant, communityId];
   @override
   String get aliasedName => _alias ?? 'members';
   @override
@@ -277,10 +269,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
           isParticipant.isAcceptableOrUnknown(
               data['is_participant']!, _isParticipantMeta));
     }
-    if (data.containsKey('num_match')) {
-      context.handle(_numMatchMeta,
-          numMatch.isAcceptableOrUnknown(data['num_match']!, _numMatchMeta));
-    }
     if (data.containsKey('community_id')) {
       context.handle(
           _communityIdMeta,
@@ -310,8 +298,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
           .read(DriftSqlType.int, data['${effectivePrefix}level'])!,
       isParticipant: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_participant'])!,
-      numMatch: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}num_match'])!,
       communityId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}community_id'])!,
     );
@@ -333,7 +319,6 @@ class Member extends DataClass implements Insertable<Member> {
   final int? age;
   final int level;
   final bool isParticipant;
-  final int numMatch;
   final int communityId;
   const Member(
       {required this.id,
@@ -342,7 +327,6 @@ class Member extends DataClass implements Insertable<Member> {
       this.age,
       required this.level,
       required this.isParticipant,
-      required this.numMatch,
       required this.communityId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -358,7 +342,6 @@ class Member extends DataClass implements Insertable<Member> {
     }
     map['level'] = Variable<int>(level);
     map['is_participant'] = Variable<bool>(isParticipant);
-    map['num_match'] = Variable<int>(numMatch);
     map['community_id'] = Variable<int>(communityId);
     return map;
   }
@@ -371,7 +354,6 @@ class Member extends DataClass implements Insertable<Member> {
       age: age == null && nullToAbsent ? const Value.absent() : Value(age),
       level: Value(level),
       isParticipant: Value(isParticipant),
-      numMatch: Value(numMatch),
       communityId: Value(communityId),
     );
   }
@@ -387,7 +369,6 @@ class Member extends DataClass implements Insertable<Member> {
       age: serializer.fromJson<int?>(json['age']),
       level: serializer.fromJson<int>(json['level']),
       isParticipant: serializer.fromJson<bool>(json['isParticipant']),
-      numMatch: serializer.fromJson<int>(json['numMatch']),
       communityId: serializer.fromJson<int>(json['communityId']),
     );
   }
@@ -401,7 +382,6 @@ class Member extends DataClass implements Insertable<Member> {
       'age': serializer.toJson<int?>(age),
       'level': serializer.toJson<int>(level),
       'isParticipant': serializer.toJson<bool>(isParticipant),
-      'numMatch': serializer.toJson<int>(numMatch),
       'communityId': serializer.toJson<int>(communityId),
     };
   }
@@ -413,7 +393,6 @@ class Member extends DataClass implements Insertable<Member> {
           Value<int?> age = const Value.absent(),
           int? level,
           bool? isParticipant,
-          int? numMatch,
           int? communityId}) =>
       Member(
         id: id ?? this.id,
@@ -422,7 +401,6 @@ class Member extends DataClass implements Insertable<Member> {
         age: age.present ? age.value : this.age,
         level: level ?? this.level,
         isParticipant: isParticipant ?? this.isParticipant,
-        numMatch: numMatch ?? this.numMatch,
         communityId: communityId ?? this.communityId,
       );
   @override
@@ -434,15 +412,14 @@ class Member extends DataClass implements Insertable<Member> {
           ..write('age: $age, ')
           ..write('level: $level, ')
           ..write('isParticipant: $isParticipant, ')
-          ..write('numMatch: $numMatch, ')
           ..write('communityId: $communityId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, sex, age, level, isParticipant, numMatch, communityId);
+  int get hashCode =>
+      Object.hash(id, name, sex, age, level, isParticipant, communityId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -453,7 +430,6 @@ class Member extends DataClass implements Insertable<Member> {
           other.age == this.age &&
           other.level == this.level &&
           other.isParticipant == this.isParticipant &&
-          other.numMatch == this.numMatch &&
           other.communityId == this.communityId);
 }
 
@@ -464,7 +440,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<int?> age;
   final Value<int> level;
   final Value<bool> isParticipant;
-  final Value<int> numMatch;
   final Value<int> communityId;
   const MembersCompanion({
     this.id = const Value.absent(),
@@ -473,7 +448,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.age = const Value.absent(),
     this.level = const Value.absent(),
     this.isParticipant = const Value.absent(),
-    this.numMatch = const Value.absent(),
     this.communityId = const Value.absent(),
   });
   MembersCompanion.insert({
@@ -483,7 +457,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.age = const Value.absent(),
     required int level,
     this.isParticipant = const Value.absent(),
-    this.numMatch = const Value.absent(),
     required int communityId,
   })  : name = Value(name),
         sex = Value(sex),
@@ -496,7 +469,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Expression<int>? age,
     Expression<int>? level,
     Expression<bool>? isParticipant,
-    Expression<int>? numMatch,
     Expression<int>? communityId,
   }) {
     return RawValuesInsertable({
@@ -506,7 +478,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
       if (age != null) 'age': age,
       if (level != null) 'level': level,
       if (isParticipant != null) 'is_participant': isParticipant,
-      if (numMatch != null) 'num_match': numMatch,
       if (communityId != null) 'community_id': communityId,
     });
   }
@@ -518,7 +489,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
       Value<int?>? age,
       Value<int>? level,
       Value<bool>? isParticipant,
-      Value<int>? numMatch,
       Value<int>? communityId}) {
     return MembersCompanion(
       id: id ?? this.id,
@@ -527,7 +497,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
       age: age ?? this.age,
       level: level ?? this.level,
       isParticipant: isParticipant ?? this.isParticipant,
-      numMatch: numMatch ?? this.numMatch,
       communityId: communityId ?? this.communityId,
     );
   }
@@ -554,9 +523,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     if (isParticipant.present) {
       map['is_participant'] = Variable<bool>(isParticipant.value);
     }
-    if (numMatch.present) {
-      map['num_match'] = Variable<int>(numMatch.value);
-    }
     if (communityId.present) {
       map['community_id'] = Variable<int>(communityId.value);
     }
@@ -572,7 +538,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
           ..write('age: $age, ')
           ..write('level: $level, ')
           ..write('isParticipant: $isParticipant, ')
-          ..write('numMatch: $numMatch, ')
           ..write('communityId: $communityId')
           ..write(')'))
         .toString();
@@ -593,15 +558,15 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _isSinglesMeta =
-      const VerificationMeta('isSingles');
+  static const VerificationMeta _isSingleMeta =
+      const VerificationMeta('isSingle');
   @override
-  late final GeneratedColumn<bool> isSingles =
-      GeneratedColumn<bool>('is_singles', aliasedName, false,
+  late final GeneratedColumn<bool> isSingle =
+      GeneratedColumn<bool>('is_single', aliasedName, false,
           type: DriftSqlType.bool,
           requiredDuringInsert: true,
           defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_singles" IN (0, 1))',
+            SqlDialect.sqlite: 'CHECK ("is_single" IN (0, 1))',
             SqlDialect.mysql: '',
             SqlDialect.postgres: '',
           }));
@@ -621,14 +586,14 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
       const VerificationMeta('player3Id');
   @override
   late final GeneratedColumn<int> player3Id = GeneratedColumn<int>(
-      'player3_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      'player3_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _player4IdMeta =
       const VerificationMeta('player4Id');
   @override
   late final GeneratedColumn<int> player4Id = GeneratedColumn<int>(
-      'player4_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      'player4_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _communityIdMeta =
       const VerificationMeta('communityId');
   @override
@@ -638,9 +603,25 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES communities (id) ON DELETE CASCADE'));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, isSingles, player1Id, player2Id, player3Id, player4Id, communityId];
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: Constant(DateTime.now()));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        isSingle,
+        player1Id,
+        player2Id,
+        player3Id,
+        player4Id,
+        communityId,
+        createdAt
+      ];
   @override
   String get aliasedName => _alias ?? 'matches';
   @override
@@ -653,11 +634,11 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('is_singles')) {
-      context.handle(_isSinglesMeta,
-          isSingles.isAcceptableOrUnknown(data['is_singles']!, _isSinglesMeta));
+    if (data.containsKey('is_single')) {
+      context.handle(_isSingleMeta,
+          isSingle.isAcceptableOrUnknown(data['is_single']!, _isSingleMeta));
     } else if (isInserting) {
-      context.missing(_isSinglesMeta);
+      context.missing(_isSingleMeta);
     }
     if (data.containsKey('player1_id')) {
       context.handle(_player1IdMeta,
@@ -674,14 +655,10 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
     if (data.containsKey('player3_id')) {
       context.handle(_player3IdMeta,
           player3Id.isAcceptableOrUnknown(data['player3_id']!, _player3IdMeta));
-    } else if (isInserting) {
-      context.missing(_player3IdMeta);
     }
     if (data.containsKey('player4_id')) {
       context.handle(_player4IdMeta,
           player4Id.isAcceptableOrUnknown(data['player4_id']!, _player4IdMeta));
-    } else if (isInserting) {
-      context.missing(_player4IdMeta);
     }
     if (data.containsKey('community_id')) {
       context.handle(
@@ -690,6 +667,10 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
               data['community_id']!, _communityIdMeta));
     } else if (isInserting) {
       context.missing(_communityIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
     return context;
   }
@@ -702,18 +683,20 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
     return Match(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      isSingles: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_singles'])!,
+      isSingle: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_single'])!,
       player1Id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}player1_id'])!,
       player2Id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}player2_id'])!,
       player3Id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}player3_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}player3_id']),
       player4Id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}player4_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}player4_id']),
       communityId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}community_id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
   }
 
@@ -725,42 +708,54 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
 
 class Match extends DataClass implements Insertable<Match> {
   final int id;
-  final bool isSingles;
+  final bool isSingle;
   final int player1Id;
   final int player2Id;
-  final int player3Id;
-  final int player4Id;
+  final int? player3Id;
+  final int? player4Id;
   final int communityId;
+  final DateTime createdAt;
   const Match(
       {required this.id,
-      required this.isSingles,
+      required this.isSingle,
       required this.player1Id,
       required this.player2Id,
-      required this.player3Id,
-      required this.player4Id,
-      required this.communityId});
+      this.player3Id,
+      this.player4Id,
+      required this.communityId,
+      required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['is_singles'] = Variable<bool>(isSingles);
+    map['is_single'] = Variable<bool>(isSingle);
     map['player1_id'] = Variable<int>(player1Id);
     map['player2_id'] = Variable<int>(player2Id);
-    map['player3_id'] = Variable<int>(player3Id);
-    map['player4_id'] = Variable<int>(player4Id);
+    if (!nullToAbsent || player3Id != null) {
+      map['player3_id'] = Variable<int>(player3Id);
+    }
+    if (!nullToAbsent || player4Id != null) {
+      map['player4_id'] = Variable<int>(player4Id);
+    }
     map['community_id'] = Variable<int>(communityId);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
   MatchesCompanion toCompanion(bool nullToAbsent) {
     return MatchesCompanion(
       id: Value(id),
-      isSingles: Value(isSingles),
+      isSingle: Value(isSingle),
       player1Id: Value(player1Id),
       player2Id: Value(player2Id),
-      player3Id: Value(player3Id),
-      player4Id: Value(player4Id),
+      player3Id: player3Id == null && nullToAbsent
+          ? const Value.absent()
+          : Value(player3Id),
+      player4Id: player4Id == null && nullToAbsent
+          ? const Value.absent()
+          : Value(player4Id),
       communityId: Value(communityId),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -769,12 +764,13 @@ class Match extends DataClass implements Insertable<Match> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Match(
       id: serializer.fromJson<int>(json['id']),
-      isSingles: serializer.fromJson<bool>(json['isSingles']),
+      isSingle: serializer.fromJson<bool>(json['isSingle']),
       player1Id: serializer.fromJson<int>(json['player1Id']),
       player2Id: serializer.fromJson<int>(json['player2Id']),
-      player3Id: serializer.fromJson<int>(json['player3Id']),
-      player4Id: serializer.fromJson<int>(json['player4Id']),
+      player3Id: serializer.fromJson<int?>(json['player3Id']),
+      player4Id: serializer.fromJson<int?>(json['player4Id']),
       communityId: serializer.fromJson<int>(json['communityId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -782,129 +778,139 @@ class Match extends DataClass implements Insertable<Match> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'isSingles': serializer.toJson<bool>(isSingles),
+      'isSingle': serializer.toJson<bool>(isSingle),
       'player1Id': serializer.toJson<int>(player1Id),
       'player2Id': serializer.toJson<int>(player2Id),
-      'player3Id': serializer.toJson<int>(player3Id),
-      'player4Id': serializer.toJson<int>(player4Id),
+      'player3Id': serializer.toJson<int?>(player3Id),
+      'player4Id': serializer.toJson<int?>(player4Id),
       'communityId': serializer.toJson<int>(communityId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   Match copyWith(
           {int? id,
-          bool? isSingles,
+          bool? isSingle,
           int? player1Id,
           int? player2Id,
-          int? player3Id,
-          int? player4Id,
-          int? communityId}) =>
+          Value<int?> player3Id = const Value.absent(),
+          Value<int?> player4Id = const Value.absent(),
+          int? communityId,
+          DateTime? createdAt}) =>
       Match(
         id: id ?? this.id,
-        isSingles: isSingles ?? this.isSingles,
+        isSingle: isSingle ?? this.isSingle,
         player1Id: player1Id ?? this.player1Id,
         player2Id: player2Id ?? this.player2Id,
-        player3Id: player3Id ?? this.player3Id,
-        player4Id: player4Id ?? this.player4Id,
+        player3Id: player3Id.present ? player3Id.value : this.player3Id,
+        player4Id: player4Id.present ? player4Id.value : this.player4Id,
         communityId: communityId ?? this.communityId,
+        createdAt: createdAt ?? this.createdAt,
       );
   @override
   String toString() {
     return (StringBuffer('Match(')
           ..write('id: $id, ')
-          ..write('isSingles: $isSingles, ')
+          ..write('isSingle: $isSingle, ')
           ..write('player1Id: $player1Id, ')
           ..write('player2Id: $player2Id, ')
           ..write('player3Id: $player3Id, ')
           ..write('player4Id: $player4Id, ')
-          ..write('communityId: $communityId')
+          ..write('communityId: $communityId, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, isSingles, player1Id, player2Id, player3Id, player4Id, communityId);
+  int get hashCode => Object.hash(id, isSingle, player1Id, player2Id, player3Id,
+      player4Id, communityId, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Match &&
           other.id == this.id &&
-          other.isSingles == this.isSingles &&
+          other.isSingle == this.isSingle &&
           other.player1Id == this.player1Id &&
           other.player2Id == this.player2Id &&
           other.player3Id == this.player3Id &&
           other.player4Id == this.player4Id &&
-          other.communityId == this.communityId);
+          other.communityId == this.communityId &&
+          other.createdAt == this.createdAt);
 }
 
 class MatchesCompanion extends UpdateCompanion<Match> {
   final Value<int> id;
-  final Value<bool> isSingles;
+  final Value<bool> isSingle;
   final Value<int> player1Id;
   final Value<int> player2Id;
-  final Value<int> player3Id;
-  final Value<int> player4Id;
+  final Value<int?> player3Id;
+  final Value<int?> player4Id;
   final Value<int> communityId;
+  final Value<DateTime> createdAt;
   const MatchesCompanion({
     this.id = const Value.absent(),
-    this.isSingles = const Value.absent(),
+    this.isSingle = const Value.absent(),
     this.player1Id = const Value.absent(),
     this.player2Id = const Value.absent(),
     this.player3Id = const Value.absent(),
     this.player4Id = const Value.absent(),
     this.communityId = const Value.absent(),
+    this.createdAt = const Value.absent(),
   });
   MatchesCompanion.insert({
     this.id = const Value.absent(),
-    required bool isSingles,
+    required bool isSingle,
     required int player1Id,
     required int player2Id,
-    required int player3Id,
-    required int player4Id,
+    this.player3Id = const Value.absent(),
+    this.player4Id = const Value.absent(),
     required int communityId,
-  })  : isSingles = Value(isSingles),
+    this.createdAt = const Value.absent(),
+  })  : isSingle = Value(isSingle),
         player1Id = Value(player1Id),
         player2Id = Value(player2Id),
-        player3Id = Value(player3Id),
-        player4Id = Value(player4Id),
         communityId = Value(communityId);
   static Insertable<Match> custom({
     Expression<int>? id,
-    Expression<bool>? isSingles,
+    Expression<bool>? isSingle,
     Expression<int>? player1Id,
     Expression<int>? player2Id,
     Expression<int>? player3Id,
     Expression<int>? player4Id,
     Expression<int>? communityId,
+    Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (isSingles != null) 'is_singles': isSingles,
+      if (isSingle != null) 'is_single': isSingle,
       if (player1Id != null) 'player1_id': player1Id,
       if (player2Id != null) 'player2_id': player2Id,
       if (player3Id != null) 'player3_id': player3Id,
       if (player4Id != null) 'player4_id': player4Id,
       if (communityId != null) 'community_id': communityId,
+      if (createdAt != null) 'created_at': createdAt,
     });
   }
 
   MatchesCompanion copyWith(
       {Value<int>? id,
-      Value<bool>? isSingles,
+      Value<bool>? isSingle,
       Value<int>? player1Id,
       Value<int>? player2Id,
-      Value<int>? player3Id,
-      Value<int>? player4Id,
-      Value<int>? communityId}) {
+      Value<int?>? player3Id,
+      Value<int?>? player4Id,
+      Value<int>? communityId,
+      Value<DateTime>? createdAt}) {
     return MatchesCompanion(
       id: id ?? this.id,
-      isSingles: isSingles ?? this.isSingles,
+      isSingle: isSingle ?? this.isSingle,
       player1Id: player1Id ?? this.player1Id,
       player2Id: player2Id ?? this.player2Id,
       player3Id: player3Id ?? this.player3Id,
       player4Id: player4Id ?? this.player4Id,
       communityId: communityId ?? this.communityId,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -914,8 +920,8 @@ class MatchesCompanion extends UpdateCompanion<Match> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (isSingles.present) {
-      map['is_singles'] = Variable<bool>(isSingles.value);
+    if (isSingle.present) {
+      map['is_single'] = Variable<bool>(isSingle.value);
     }
     if (player1Id.present) {
       map['player1_id'] = Variable<int>(player1Id.value);
@@ -932,6 +938,9 @@ class MatchesCompanion extends UpdateCompanion<Match> {
     if (communityId.present) {
       map['community_id'] = Variable<int>(communityId.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
     return map;
   }
 
@@ -939,12 +948,13 @@ class MatchesCompanion extends UpdateCompanion<Match> {
   String toString() {
     return (StringBuffer('MatchesCompanion(')
           ..write('id: $id, ')
-          ..write('isSingles: $isSingles, ')
+          ..write('isSingle: $isSingle, ')
           ..write('player1Id: $player1Id, ')
           ..write('player2Id: $player2Id, ')
           ..write('player3Id: $player3Id, ')
           ..write('player4Id: $player4Id, ')
-          ..write('communityId: $communityId')
+          ..write('communityId: $communityId, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
