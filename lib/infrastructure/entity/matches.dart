@@ -11,6 +11,6 @@ class Matches extends Table {
   IntColumn get player4Id => integer().nullable()();
   IntColumn get communityId =>
       integer().references(Communities, #id, onDelete: KeyAction.cascade)();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(Constant(DateTime.now()))();
+  IntColumn get createdAt =>
+      integer().withDefault(Constant(DateTime.now().millisecondsSinceEpoch))();
 }

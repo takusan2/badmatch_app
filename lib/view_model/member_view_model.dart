@@ -3,10 +3,7 @@ import 'package:badmatch_app/model/advanced_member.dart';
 import 'package:badmatch_app/repository/member_repository.dart';
 
 class MemberViewModel {
-  final MemberRepository memberRepository = MemberRepository(
-    memberAccessor: MyDatabase().memberAccessor,
-    matchAccessor: MyDatabase().matchAccessor,
-  );
+  final MemberRepository memberRepository = MemberRepository();
   bool editFlag = false;
 
   Future<List<Member>> getCommunityMembers(int communityId) async {

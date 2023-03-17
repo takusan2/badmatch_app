@@ -7,12 +7,17 @@ import 'package:badmatch_app/infrastructure/entity/members.dart';
 import 'package:badmatch_app/view_model/add_member_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
-class AddMemberView extends StatelessWidget {
+class AddMemberView extends StatefulWidget {
   final Community community;
   const AddMemberView({super.key, required this.community});
 
+  @override
+  State<AddMemberView> createState() => _AddMemberViewState();
+}
+
+class _AddMemberViewState extends State<AddMemberView> {
   DropdownButton<int> androidDropdown({required AddMemberViewModel vm}) {
     List<DropdownMenuItem<int>> dropdownItems = kLevelList
         .map(
@@ -27,7 +32,9 @@ class AddMemberView extends StatelessWidget {
       value: vm.level,
       items: dropdownItems,
       onChanged: (value) {
-        vm.level = value!;
+        setState(() {
+          vm.level = value!;
+        });
       },
     );
   }
@@ -41,15 +48,18 @@ class AddMemberView extends StatelessWidget {
       backgroundColor: Colors.white,
       itemExtent: 32.0,
       onSelectedItemChanged: (selectedIndex) async {
-        vm.level = kLevelList[selectedIndex];
+        setState(() {
+          vm.level = kLevelList[selectedIndex];
+        });
       },
       children: pickerItems,
     );
   }
 
+  AddMemberViewModel vm = AddMemberViewModel();
+
   @override
   Widget build(BuildContext context) {
-    AddMemberViewModel vm = Provider.of<AddMemberViewModel>(context);
     return SafeArea(
       child: Container(
         color: const Color(0xFF757575),
@@ -74,7 +84,9 @@ class AddMemberView extends StatelessWidget {
                         value: SexEnum.male,
                         groupValue: vm.sex,
                         onChanged: (value) {
-                          vm.sex = SexEnum.male;
+                          setState(() {
+                            vm.sex = SexEnum.male;
+                          });
                         },
                       ),
                     ),
@@ -84,7 +96,9 @@ class AddMemberView extends StatelessWidget {
                         value: SexEnum.female,
                         groupValue: vm.sex,
                         onChanged: (value) {
-                          vm.sex = SexEnum.female;
+                          setState(() {
+                            vm.sex = SexEnum.female;
+                          });
                         },
                       ),
                     ),
@@ -100,7 +114,7 @@ class AddMemberView extends StatelessWidget {
                       : androidDropdown(vm: vm),
                 ),
                 TextFormField(
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.name,
                   decoration: const InputDecoration(label: Text('名前')),
                   onChanged: (value) => vm.name = value,
                   validator: (value) {
@@ -113,17 +127,21 @@ class AddMemberView extends StatelessWidget {
                 TextFormField(
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(label: Text('年齢（任意）')),
-                    onChanged: (value) => vm.age = int.parse(value)),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    onChanged: (value) {
+                      if (value != '') {
+                        vm.age = int.parse(value);
+                      }
+                    }),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: ElevatedButton(
                     onPressed: () async {
                       if (vm.formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
                         await vm
-                            .insertMember(community)
+                            .insertMember(widget.community)
                             .then((value) => Navigator.pop(context));
                       }
                     },

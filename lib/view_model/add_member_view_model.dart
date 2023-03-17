@@ -4,14 +4,11 @@ import 'package:badmatch_app/repository/member_repository.dart';
 import 'package:flutter/material.dart';
 
 class AddMemberViewModel extends ChangeNotifier {
-  final MemberRepository memberRepository = MemberRepository(
-    memberAccessor: MyDatabase().memberAccessor,
-    matchAccessor: MyDatabase().matchAccessor,
-  );
+  final MemberRepository memberRepository = MemberRepository();
   final formKey = GlobalKey<FormState>();
 
   late String name;
-  SexEnum _sex = SexEnum.female;
+  SexEnum _sex = SexEnum.male;
   int level = 1;
   int? age;
 

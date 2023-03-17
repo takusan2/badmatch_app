@@ -3,10 +3,7 @@ import 'package:badmatch_app/model/participant.dart';
 import 'package:badmatch_app/repository/member_repository.dart';
 
 class MatchViewModel {
-  final MemberRepository memberRepository = MemberRepository(
-    memberAccessor: MyDatabase().memberAccessor,
-    matchAccessor: MyDatabase().matchAccessor,
-  );
+  final MemberRepository memberRepository = MemberRepository();
 
   Future<Participant> getPlayersList({
     required Community community,

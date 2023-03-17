@@ -17,8 +17,9 @@ class MatchAccessor extends DatabaseAccessor<MyDatabase>
     DateTime endOfDay = startOfDay.add(const Duration(days: 1));
 
     return (select(matches)
-          ..where((t) => ((t.createdAt
-                  .isBetween(Constant(startOfDay), Constant(endOfDay))) &
+          ..where((t) => ((t.createdAt.isBetween(
+                  Constant(startOfDay.millisecondsSinceEpoch),
+                  Constant(endOfDay.millisecondsSinceEpoch))) &
               (t.player1Id.equals(member.id) |
                   t.player2Id.equals(member.id) |
                   t.player3Id.equals(member.id) |
@@ -35,4 +36,14 @@ class MatchAccessor extends DatabaseAccessor<MyDatabase>
 
   Future<void> deleteMatch({required match}) =>
       (delete(matches)..where((t) => t.id.equals(match.id))).go();
+
+  Future<void> deleteWeekAgoMatch() async {
+    DateTime weekAgo = DateTime.now().subtract(const Duration(days: 7));
+    (delete(matches)
+          ..where(
+            (t) => t.createdAt
+                .isSmallerThan(Constant(weekAgo.millisecondsSinceEpoch)),
+          ))
+        .go();
+  }
 }

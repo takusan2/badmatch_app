@@ -85,105 +85,136 @@ class _MemberViewState extends State<MemberView> {
                       if (snapshot.data == null) {
                         return Container();
                       }
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: advancedMemberList.length,
-                        itemBuilder: (context, index) {
-                          AdvancedMember advancedMember =
-                              advancedMemberList[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                              vertical: 1.0,
-                            ),
-                            child: Slidable(
-                              key: ObjectKey(advancedMember),
-                              endActionPane: ActionPane(
-                                extentRatio: 0.3,
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      vm.deleteMember(advancedMember.member);
-                                    },
-                                    backgroundColor: const Color(0xFFFE4A49),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: 'Delete',
+                      return Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text('メンバー ${advancedMemberList.length}人'),
+                              Text('参加者 ${advancedMemberList.map((e) {
+                                    if (e.isParticipant == true) {
+                                      return e;
+                                    }
+                                  }).whereType<AdvancedMember>().toList().length}人'),
+                            ],
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: advancedMemberList.length,
+                            itemBuilder: (context, index) {
+                              AdvancedMember advancedMember =
+                                  advancedMemberList[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 1.0,
+                                ),
+                                child: Slidable(
+                                  key: ObjectKey(advancedMember),
+                                  endActionPane: ActionPane(
+                                    extentRatio: 0.3,
+                                    motion: const ScrollMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) {
+                                          vm.deleteMember(
+                                              advancedMember.member);
+                                        },
+                                        backgroundColor:
+                                            const Color(0xFFFE4A49),
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.delete,
+                                        label: 'Delete',
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Card(
-                                elevation: 2,
-                                color: advancedMember.sex == SexEnum.male
-                                    ? Colors.blue.shade100
-                                    : Colors.red.shade100,
-                                child: vm.editFlag
-                                    ? ListTile(
-                                        title: Text(
-                                          'Lv.${advancedMember.level.toString()}  ${advancedMember.name}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                                FontAwesomeIcons.handshake),
-                                            const SizedBox(width: 10),
-                                            Text(advancedMember.numMatches
-                                                .toString()),
-                                            IconButton(
-                                              icon: const Icon(Icons.edit),
-                                              onPressed: () {
-                                                showModalBottomSheet(
-                                                  context: context,
-                                                  isScrollControlled: true,
-                                                  builder: (context) {
-                                                    return SingleChildScrollView(
-                                                      child: Padding(
-                                                        padding: EdgeInsets.only(
-                                                            bottom:
-                                                                MediaQuery.of(
+                                  child: Card(
+                                    elevation: 2,
+                                    color: advancedMember.sex == SexEnum.male
+                                        ? Colors.blue.shade100
+                                        : Colors.red.shade100,
+                                    child: vm.editFlag
+                                        ? ListTile(
+                                            title: Text(
+                                              'Lv.${advancedMember.level.toString()}  ${advancedMember.name}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            subtitle: Row(
+                                              children: [
+                                                const Icon(
+                                                    FontAwesomeIcons.handshake),
+                                                const SizedBox(width: 10),
+                                                Text(advancedMember.numMatches
+                                                    .toString()),
+                                              ],
+                                            ),
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(Icons.edit),
+                                                  onPressed: () {
+                                                    showModalBottomSheet(
+                                                      context: context,
+                                                      isScrollControlled: true,
+                                                      builder: (context) {
+                                                        return SingleChildScrollView(
+                                                          child: Padding(
+                                                            padding: EdgeInsets.only(
+                                                                bottom: MediaQuery.of(
                                                                         context)
                                                                     .viewInsets
                                                                     .bottom),
-                                                        child: EditMemberView(
-                                                          member: advancedMember
-                                                              .member,
-                                                        ),
-                                                      ),
+                                                            child:
+                                                                EditMemberView(
+                                                              member:
+                                                                  advancedMember
+                                                                      .member,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
                                                     );
                                                   },
-                                                );
-                                              },
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      )
-                                    : CheckboxListTile(
-                                        value: advancedMember.isParticipant,
-                                        onChanged: (value) {
-                                          vm.updateMemberIsParticipant(
-                                            member: advancedMember.member,
-                                            isParticipant: value!,
-                                          );
-                                        },
-                                        title: Row(
-                                          children: [
-                                            Text(
-                                                'Lv.${advancedMember.level.toString()}'),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              advancedMember.name,
-                                              overflow: TextOverflow.ellipsis,
+                                          )
+                                        : CheckboxListTile(
+                                            value: advancedMember.isParticipant,
+                                            onChanged: (value) async {
+                                              await vm
+                                                  .updateMemberIsParticipant(
+                                                member: advancedMember.member,
+                                                isParticipant: !advancedMember
+                                                    .isParticipant,
+                                              );
+                                            },
+                                            title: Row(
+                                              children: [
+                                                Text(
+                                                  'Lv.${advancedMember.level.toString()}  ${advancedMember.name}',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          );
-                        },
+                                            subtitle: Row(
+                                              children: [
+                                                const Icon(
+                                                    FontAwesomeIcons.handshake),
+                                                const SizedBox(width: 10),
+                                                Text(advancedMember.numMatches
+                                                    .toString()),
+                                              ],
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       );
                     }
                   },
