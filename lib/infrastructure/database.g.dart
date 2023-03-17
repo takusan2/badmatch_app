@@ -606,11 +606,11 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
       'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultValue: Constant(DateTime.now()));
+      defaultValue: Constant(DateTime.now().millisecondsSinceEpoch));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -696,7 +696,7 @@ class $MatchesTable extends Matches with TableInfo<$MatchesTable, Match> {
       communityId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}community_id'])!,
       createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
     );
   }
 
@@ -714,7 +714,7 @@ class Match extends DataClass implements Insertable<Match> {
   final int? player3Id;
   final int? player4Id;
   final int communityId;
-  final DateTime createdAt;
+  final int createdAt;
   const Match(
       {required this.id,
       required this.isSingle,
@@ -738,7 +738,7 @@ class Match extends DataClass implements Insertable<Match> {
       map['player4_id'] = Variable<int>(player4Id);
     }
     map['community_id'] = Variable<int>(communityId);
-    map['created_at'] = Variable<DateTime>(createdAt);
+    map['created_at'] = Variable<int>(createdAt);
     return map;
   }
 
@@ -770,7 +770,7 @@ class Match extends DataClass implements Insertable<Match> {
       player3Id: serializer.fromJson<int?>(json['player3Id']),
       player4Id: serializer.fromJson<int?>(json['player4Id']),
       communityId: serializer.fromJson<int>(json['communityId']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
     );
   }
   @override
@@ -784,7 +784,7 @@ class Match extends DataClass implements Insertable<Match> {
       'player3Id': serializer.toJson<int?>(player3Id),
       'player4Id': serializer.toJson<int?>(player4Id),
       'communityId': serializer.toJson<int>(communityId),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'createdAt': serializer.toJson<int>(createdAt),
     };
   }
 
@@ -796,7 +796,7 @@ class Match extends DataClass implements Insertable<Match> {
           Value<int?> player3Id = const Value.absent(),
           Value<int?> player4Id = const Value.absent(),
           int? communityId,
-          DateTime? createdAt}) =>
+          int? createdAt}) =>
       Match(
         id: id ?? this.id,
         isSingle: isSingle ?? this.isSingle,
@@ -847,7 +847,7 @@ class MatchesCompanion extends UpdateCompanion<Match> {
   final Value<int?> player3Id;
   final Value<int?> player4Id;
   final Value<int> communityId;
-  final Value<DateTime> createdAt;
+  final Value<int> createdAt;
   const MatchesCompanion({
     this.id = const Value.absent(),
     this.isSingle = const Value.absent(),
@@ -879,7 +879,7 @@ class MatchesCompanion extends UpdateCompanion<Match> {
     Expression<int>? player3Id,
     Expression<int>? player4Id,
     Expression<int>? communityId,
-    Expression<DateTime>? createdAt,
+    Expression<int>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -901,7 +901,7 @@ class MatchesCompanion extends UpdateCompanion<Match> {
       Value<int?>? player3Id,
       Value<int?>? player4Id,
       Value<int>? communityId,
-      Value<DateTime>? createdAt}) {
+      Value<int>? createdAt}) {
     return MatchesCompanion(
       id: id ?? this.id,
       isSingle: isSingle ?? this.isSingle,
@@ -939,7 +939,7 @@ class MatchesCompanion extends UpdateCompanion<Match> {
       map['community_id'] = Variable<int>(communityId.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     return map;
   }

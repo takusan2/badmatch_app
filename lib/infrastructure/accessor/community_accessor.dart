@@ -16,8 +16,9 @@ class CommunityAccessor extends DatabaseAccessor<MyDatabase>
 
   Stream<List<Community>> watchCommunities() => select(communities).watch();
 
-  Future<void> deleteCommunity(Community community) =>
-      (delete(communities)..where((t) => t.id.equals(community.id))).go();
+  Future<void> deleteCommunity(Community community) {
+    return (delete(communities)..where((t) => t.id.equals(community.id))).go();
+  }
 
   Future<void> updateCommunity({
     required Community community,

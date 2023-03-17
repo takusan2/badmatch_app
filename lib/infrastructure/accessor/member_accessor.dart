@@ -40,4 +40,8 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
 
   Future<void> deleteMember(Member member) =>
       (delete(members)..where((t) => t.id.equals(member.id))).go();
+
+  Future<void> deleteCommunityMembers({required Community community}) async {
+    (delete(members)..where((t) => t.communityId.equals(community.id))).go();
+  }
 }

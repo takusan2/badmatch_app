@@ -5,13 +5,8 @@ import 'package:badmatch_app/model/participant.dart';
 import 'package:drift/drift.dart';
 
 class MemberRepository {
-  final MemberAccessor memberAccessor;
-  final MatchAccessor matchAccessor;
-
-  MemberRepository({
-    required this.memberAccessor,
-    required this.matchAccessor,
-  });
+  final MemberAccessor _memberAccessor = MyDatabase().memberAccessor;
+  final MatchAccessor _matchAccessor = MyDatabase().matchAccessor;
 
   Future<void> insertMember({
     required String name,
@@ -27,16 +22,16 @@ class MemberRepository {
       level: level,
       communityId: communityId,
     );
-    return memberAccessor.insertMember(membersCompanion: membersCompanion);
+    return _memberAccessor.insertMember(membersCompanion: membersCompanion);
   }
 
   Future<List<Member>> getCommunityMembers(int communityId) =>
-      memberAccessor.getCommunityMembers(communityId);
+      _memberAccessor.getCommunityMembers(communityId);
 
   Stream<List<AdvancedMember>> watchCommunityAdvancedMembers(
       int communityId) async* {
     await for (List<Member> members
-        in memberAccessor.watchCommunityMembers(communityId)) {
+        in _memberAccessor.watchCommunityMembers(communityId)) {
       List<AdvancedMember> advancedMemberList = [];
       for (Member member in members) {
         int numMatches = await getNumTodayMemberMatches(member);
@@ -63,7 +58,7 @@ class MemberRepository {
       isParticipant:
           isParticipant != null ? Value(isParticipant) : const Value.absent(),
     );
-    return memberAccessor.updateMember(
+    return _memberAccessor.updateMember(
       member: member,
       membersCompanion: membersCompanion,
     );
@@ -73,7 +68,7 @@ class MemberRepository {
       {required Map<Member, MembersCompanion> membersCompanionMap}) async {
     membersCompanionMap.forEach(
       (member, membersCompanion) async {
-        await memberAccessor.updateMember(
+        await _memberAccessor.updateMember(
           member: member,
           membersCompanion: membersCompanion,
         );
@@ -82,20 +77,21 @@ class MemberRepository {
   }
 
   Future<void> deleteMember({required Member member}) =>
-      memberAccessor.deleteMember(member);
+      _memberAccessor.deleteMember(member);
 
   Future<void> deleteMembers({required List<Member> memberList}) async {
     for (Member member in memberList) {
-      await memberAccessor.deleteMember(member);
+      await _memberAccessor.deleteMember(member);
     }
   }
 
   Future<List<Member>> getParticipants(Community community) async {
-    return await memberAccessor.getParticipants(community.id);
+    return await _memberAccessor.getParticipants(community.id);
   }
 
   Future<int> getNumTodayMemberMatches(Member member) async {
-    int numMatches = (await matchAccessor.getTodayMemberMatches(member)).length;
+    int numMatches =
+        (await _matchAccessor.getTodayMemberMatches(member)).length;
     return numMatches;
   }
 
@@ -105,7 +101,7 @@ class MemberRepository {
     required bool closeLevel,
   }) async {
     List<Member> participantList =
-        await memberAccessor.getParticipants(community.id);
+        await _memberAccessor.getParticipants(community.id);
     participantList.shuffle();
     if (closeLevel) {
       participantList.sort(((a, b) => a.level.compareTo(b.level)));
@@ -128,10 +124,10 @@ class MemberRepository {
     return participantList;
   }
 
-  Future<void> _insertMatchs({required MatchesCompanion matchesCompanion}) {
-    return MyDatabase()
-        .matchAccessor
-        .insertMatch(matchesCompanion: matchesCompanion);
+  Future<void> _insertMatchs(
+      {required MatchesCompanion matchesCompanion}) async {
+    _matchAccessor.deleteWeekAgoMatch();
+    _matchAccessor.insertMatch(matchesCompanion: matchesCompanion);
   }
 
   Future<Participant> getPlayersList(

@@ -8,10 +8,7 @@ class MatchConfigViewModel {
   bool closeLevel = true;
   late int numParticipants;
 
-  final MemberRepository memberRepository = MemberRepository(
-    memberAccessor: MyDatabase().memberAccessor,
-    matchAccessor: MyDatabase().matchAccessor,
-  );
+  final MemberRepository memberRepository = MemberRepository();
 
   Future<void> setNumParticipants(Community community) async {
     numParticipants =

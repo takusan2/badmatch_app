@@ -1,8 +1,10 @@
 import 'package:badmatch_app/component/badminton_court.dart';
+import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/model/participant.dart';
 import 'package:badmatch_app/view_model/mathc_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MatchView extends StatefulWidget {
   final Community community;
@@ -28,8 +30,29 @@ class _MatchViewState extends State<MatchView> {
   final MatchViewModel vm = MatchViewModel();
 
   @override
+  void didChangeDependencies() async {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kAppBarColor,
+      ),
       backgroundColor: Colors.orange.shade200,
       body: SafeArea(
         child: Padding(
@@ -67,7 +90,8 @@ class _MatchViewState extends State<MatchView> {
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
+                                    horizontal: 8.0,
+                                  ),
                                   child: Column(
                                     children: [
                                       Text('第${index + 1}コート'),
@@ -79,9 +103,9 @@ class _MatchViewState extends State<MatchView> {
                                                       .height *
                                                   0.4,
                                               player1:
-                                                  '${playersList[index][0].name},${playersList[index][0].level}',
+                                                  '${playersList[index][0].name}',
                                               player3:
-                                                  '${playersList[index][1].name},${playersList[index][1].level}',
+                                                  '${playersList[index][1].name}',
                                             )
                                           : BadmintonCourt(
                                               height: MediaQuery.of(context)
@@ -89,13 +113,13 @@ class _MatchViewState extends State<MatchView> {
                                                       .height *
                                                   0.4,
                                               player1:
-                                                  '${playersList[index][0].name},${playersList[index][0].level}',
+                                                  '${playersList[index][0].name}',
                                               player2:
-                                                  '${playersList[index][1].name},${playersList[index][1].level}',
+                                                  '${playersList[index][1].name}',
                                               player3:
-                                                  '${playersList[index][2].name},${playersList[index][2].level}',
+                                                  '${playersList[index][2].name}',
                                               player4:
-                                                  '${playersList[index][3].name},${playersList[index][3].level}',
+                                                  '${playersList[index][3].name}',
                                             ),
                                     ],
                                   ),
@@ -104,17 +128,26 @@ class _MatchViewState extends State<MatchView> {
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(20.0),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                          ),
-                          child: Row(
-                            children:
-                                remainMembers.map((e) => Text(e.name)).toList(),
-                          ),
+                        remainMembers.isEmpty
+                            ? const SizedBox(
+                                height: 10.0,
+                              )
+                            : Container(
+                                padding: const EdgeInsets.all(20.0),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20.0)),
+                                ),
+                                child: Wrap(
+                                  spacing: 10.0,
+                                  children: remainMembers
+                                      .map((e) => Text(e.name))
+                                      .toList(),
+                                ),
+                              ),
+                        const SizedBox(
+                          height: 10.0,
                         ),
                         ElevatedButton(
                             onPressed: () {

@@ -1,11 +1,9 @@
-import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/repository/community_repository.dart';
 
 class AddCommunityViewModel {
   String _communityName = '';
 
-  final CommunityRepository communityRepository =
-      CommunityRepository(MyDatabase().communityAccessor);
+  final CommunityRepository communityRepository = CommunityRepository();
 
   set communityName(String communityName) => _communityName = communityName;
 

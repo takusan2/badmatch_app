@@ -46,6 +46,7 @@ class _MatchConfigViewState extends State<MatchConfigView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
+                autofocus: true,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                     label: Text('コート数'), hintText: '1~20'),
