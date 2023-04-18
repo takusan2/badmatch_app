@@ -1,6 +1,6 @@
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/model/advanced_member.dart';
-import 'package:badmatch_app/repository/member_repository.dart';
+import 'package:badmatch_app/infrastructure/repository/member_repository.dart';
 
 class MemberViewModel {
   final MemberRepository memberRepository = MemberRepository();

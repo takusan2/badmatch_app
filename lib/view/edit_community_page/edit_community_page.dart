@@ -1,18 +1,21 @@
+import 'package:badmatch_app/business_logic/community_logic.dart';
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
-import 'package:badmatch_app/view_model/edit_community_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class EditCommunityView extends StatefulWidget {
-  final Community community;
-  const EditCommunityView({super.key, required this.community});
+class EditCommunityPage extends StatefulWidget {
+  final Community? community;
+  const EditCommunityPage({super.key, this.community});
 
   @override
-  State<EditCommunityView> createState() => _EditCommunityViewState();
+  State<EditCommunityPage> createState() => _EditCommunityPageState();
 }
 
-class _EditCommunityViewState extends State<EditCommunityView> {
-  EditCommunityViewModel vm = EditCommunityViewModel();
+class _EditCommunityPageState extends State<EditCommunityPage> {
+  String name = "";
+  final _key = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,7 +45,7 @@ class _EditCommunityViewState extends State<EditCommunityView> {
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Form(
-                  key: ObjectKey(widget.community),
+                  key: _key,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -64,32 +67,51 @@ class _EditCommunityViewState extends State<EditCommunityView> {
                           Expanded(
                             flex: 4,
                             child: TextFormField(
-                              initialValue: widget.community.name,
+                              initialValue: widget.community?.name,
+                              validator: (value) {
+                                if (value == null || value == "") {
+                                  return '1文字以上入力してください';
+                                }
+                                return null;
+                              },
                               autofocus: true,
-                              onChanged: (value) => vm.communityName = value,
+                              onChanged: (value) {
+                                name = value;
+                              },
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 10.0),
-                      Container(
-                        decoration: kButtonDecoration,
-                        child: FilledButton(
-                          onPressed: () async {
-                            await vm
-                                .updateCommunity(community: widget.community)
-                                .then((_) => Navigator.pop(context));
-                          },
-                          child: const Text(
-                            '完了',
-                            style: kButtonTextStyle,
-                          ),
-                        ),
-                      )
                     ],
                   ),
                 ),
               ),
+              Container(
+                decoration: kButtonDecoration,
+                child: FilledButton(
+                  onPressed: () async {
+                    if (_key.currentState!.validate()) {
+                      if (widget.community == null) {
+                        await context
+                            .read<CommunityLogic>()
+                            .insertCommunity(name)
+                            .then((value) => Navigator.pop(context));
+                      } else {
+                        await context
+                            .read<CommunityLogic>()
+                            .updateCommunity(
+                                id: widget.community!.id, name: name)
+                            .then((value) => Navigator.pop(context));
+                      }
+                    }
+                  },
+                  child: const Text(
+                    '完了',
+                    style: kButtonTextStyle,
+                  ),
+                ),
+              )
             ],
           ),
         ),
