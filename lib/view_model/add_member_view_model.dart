@@ -1,6 +1,6 @@
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
-import 'package:badmatch_app/repository/member_repository.dart';
+import 'package:badmatch_app/infrastructure/repository/member_repository.dart';
 import 'package:flutter/material.dart';
 
 class AddMemberViewModel extends ChangeNotifier {
