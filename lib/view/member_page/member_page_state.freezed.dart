@@ -17,6 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MemberPageState {
   bool get editFlag => throw _privateConstructorUsedError;
+  List<AdvancedMember>? get advancedMemberList =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MemberPageStateCopyWith<MemberPageState> get copyWith =>
@@ -29,7 +31,7 @@ abstract class $MemberPageStateCopyWith<$Res> {
           MemberPageState value, $Res Function(MemberPageState) then) =
       _$MemberPageStateCopyWithImpl<$Res, MemberPageState>;
   @useResult
-  $Res call({bool editFlag});
+  $Res call({bool editFlag, List<AdvancedMember>? advancedMemberList});
 }
 
 /// @nodoc
@@ -46,12 +48,17 @@ class _$MemberPageStateCopyWithImpl<$Res, $Val extends MemberPageState>
   @override
   $Res call({
     Object? editFlag = null,
+    Object? advancedMemberList = freezed,
   }) {
     return _then(_value.copyWith(
       editFlag: null == editFlag
           ? _value.editFlag
           : editFlag // ignore: cast_nullable_to_non_nullable
               as bool,
+      advancedMemberList: freezed == advancedMemberList
+          ? _value.advancedMemberList
+          : advancedMemberList // ignore: cast_nullable_to_non_nullable
+              as List<AdvancedMember>?,
     ) as $Val);
   }
 }
@@ -64,7 +71,7 @@ abstract class _$$_MemberPageStateCopyWith<$Res>
       __$$_MemberPageStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool editFlag});
+  $Res call({bool editFlag, List<AdvancedMember>? advancedMemberList});
 }
 
 /// @nodoc
@@ -79,12 +86,17 @@ class __$$_MemberPageStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? editFlag = null,
+    Object? advancedMemberList = freezed,
   }) {
     return _then(_$_MemberPageState(
       editFlag: null == editFlag
           ? _value.editFlag
           : editFlag // ignore: cast_nullable_to_non_nullable
               as bool,
+      advancedMemberList: freezed == advancedMemberList
+          ? _value._advancedMemberList
+          : advancedMemberList // ignore: cast_nullable_to_non_nullable
+              as List<AdvancedMember>?,
     ));
   }
 }
@@ -92,15 +104,29 @@ class __$$_MemberPageStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_MemberPageState implements _MemberPageState {
-  const _$_MemberPageState({this.editFlag = false});
+  const _$_MemberPageState(
+      {this.editFlag = false,
+      final List<AdvancedMember>? advancedMemberList = null})
+      : _advancedMemberList = advancedMemberList;
 
   @override
   @JsonKey()
   final bool editFlag;
+  final List<AdvancedMember>? _advancedMemberList;
+  @override
+  @JsonKey()
+  List<AdvancedMember>? get advancedMemberList {
+    final value = _advancedMemberList;
+    if (value == null) return null;
+    if (_advancedMemberList is EqualUnmodifiableListView)
+      return _advancedMemberList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'MemberPageState(editFlag: $editFlag)';
+    return 'MemberPageState(editFlag: $editFlag, advancedMemberList: $advancedMemberList)';
   }
 
   @override
@@ -109,11 +135,14 @@ class _$_MemberPageState implements _MemberPageState {
         (other.runtimeType == runtimeType &&
             other is _$_MemberPageState &&
             (identical(other.editFlag, editFlag) ||
-                other.editFlag == editFlag));
+                other.editFlag == editFlag) &&
+            const DeepCollectionEquality()
+                .equals(other._advancedMemberList, _advancedMemberList));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, editFlag);
+  int get hashCode => Object.hash(runtimeType, editFlag,
+      const DeepCollectionEquality().hash(_advancedMemberList));
 
   @JsonKey(ignore: true)
   @override
@@ -123,10 +152,14 @@ class _$_MemberPageState implements _MemberPageState {
 }
 
 abstract class _MemberPageState implements MemberPageState {
-  const factory _MemberPageState({final bool editFlag}) = _$_MemberPageState;
+  const factory _MemberPageState(
+      {final bool editFlag,
+      final List<AdvancedMember>? advancedMemberList}) = _$_MemberPageState;
 
   @override
   bool get editFlag;
+  @override
+  List<AdvancedMember>? get advancedMemberList;
   @override
   @JsonKey(ignore: true)
   _$$_MemberPageStateCopyWith<_$_MemberPageState> get copyWith =>

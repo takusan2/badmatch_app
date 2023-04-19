@@ -1,7 +1,8 @@
-import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:badmatch_app/model/advanced_member.dart';
 
-class Participant {
-  final List<List<Member>> playersList;
-  final List<Member> remainMembers;
-  Participant({required this.playersList, required this.remainMembers});
+class ParticipantsModel {
+  final List<List<AdvancedMember>> playersList;
+  final List<AdvancedMember> remainMemberList;
+  ParticipantsModel(
+      {required this.playersList, required this.remainMemberList});
 }

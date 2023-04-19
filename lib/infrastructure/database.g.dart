@@ -200,8 +200,8 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
   static const VerificationMeta _ageMeta = const VerificationMeta('age');
   @override
   late final GeneratedColumn<int> age = GeneratedColumn<int>(
-      'age', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+      'age', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _levelMeta = const VerificationMeta('level');
   @override
   late final GeneratedColumn<int> level = GeneratedColumn<int>(
@@ -256,6 +256,8 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     if (data.containsKey('age')) {
       context.handle(
           _ageMeta, age.isAcceptableOrUnknown(data['age']!, _ageMeta));
+    } else if (isInserting) {
+      context.missing(_ageMeta);
     }
     if (data.containsKey('level')) {
       context.handle(
@@ -293,7 +295,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
       sex: $MembersTable.$convertersex.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}sex'])!),
       age: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}age']),
+          .read(DriftSqlType.int, data['${effectivePrefix}age'])!,
       level: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}level'])!,
       isParticipant: attachedDatabase.typeMapping
@@ -316,7 +318,7 @@ class Member extends DataClass implements Insertable<Member> {
   final int id;
   final String name;
   final SexEnum sex;
-  final int? age;
+  final int age;
   final int level;
   final bool isParticipant;
   final int communityId;
@@ -324,7 +326,7 @@ class Member extends DataClass implements Insertable<Member> {
       {required this.id,
       required this.name,
       required this.sex,
-      this.age,
+      required this.age,
       required this.level,
       required this.isParticipant,
       required this.communityId});
@@ -337,9 +339,7 @@ class Member extends DataClass implements Insertable<Member> {
       final converter = $MembersTable.$convertersex;
       map['sex'] = Variable<int>(converter.toSql(sex));
     }
-    if (!nullToAbsent || age != null) {
-      map['age'] = Variable<int>(age);
-    }
+    map['age'] = Variable<int>(age);
     map['level'] = Variable<int>(level);
     map['is_participant'] = Variable<bool>(isParticipant);
     map['community_id'] = Variable<int>(communityId);
@@ -351,7 +351,7 @@ class Member extends DataClass implements Insertable<Member> {
       id: Value(id),
       name: Value(name),
       sex: Value(sex),
-      age: age == null && nullToAbsent ? const Value.absent() : Value(age),
+      age: Value(age),
       level: Value(level),
       isParticipant: Value(isParticipant),
       communityId: Value(communityId),
@@ -366,7 +366,7 @@ class Member extends DataClass implements Insertable<Member> {
       name: serializer.fromJson<String>(json['name']),
       sex: $MembersTable.$convertersex
           .fromJson(serializer.fromJson<int>(json['sex'])),
-      age: serializer.fromJson<int?>(json['age']),
+      age: serializer.fromJson<int>(json['age']),
       level: serializer.fromJson<int>(json['level']),
       isParticipant: serializer.fromJson<bool>(json['isParticipant']),
       communityId: serializer.fromJson<int>(json['communityId']),
@@ -379,7 +379,7 @@ class Member extends DataClass implements Insertable<Member> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'sex': serializer.toJson<int>($MembersTable.$convertersex.toJson(sex)),
-      'age': serializer.toJson<int?>(age),
+      'age': serializer.toJson<int>(age),
       'level': serializer.toJson<int>(level),
       'isParticipant': serializer.toJson<bool>(isParticipant),
       'communityId': serializer.toJson<int>(communityId),
@@ -390,7 +390,7 @@ class Member extends DataClass implements Insertable<Member> {
           {int? id,
           String? name,
           SexEnum? sex,
-          Value<int?> age = const Value.absent(),
+          int? age,
           int? level,
           bool? isParticipant,
           int? communityId}) =>
@@ -398,7 +398,7 @@ class Member extends DataClass implements Insertable<Member> {
         id: id ?? this.id,
         name: name ?? this.name,
         sex: sex ?? this.sex,
-        age: age.present ? age.value : this.age,
+        age: age ?? this.age,
         level: level ?? this.level,
         isParticipant: isParticipant ?? this.isParticipant,
         communityId: communityId ?? this.communityId,
@@ -437,7 +437,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<int> id;
   final Value<String> name;
   final Value<SexEnum> sex;
-  final Value<int?> age;
+  final Value<int> age;
   final Value<int> level;
   final Value<bool> isParticipant;
   final Value<int> communityId;
@@ -454,12 +454,13 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.id = const Value.absent(),
     required String name,
     required SexEnum sex,
-    this.age = const Value.absent(),
+    required int age,
     required int level,
     this.isParticipant = const Value.absent(),
     required int communityId,
   })  : name = Value(name),
         sex = Value(sex),
+        age = Value(age),
         level = Value(level),
         communityId = Value(communityId);
   static Insertable<Member> custom({
@@ -486,7 +487,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
       {Value<int>? id,
       Value<String>? name,
       Value<SexEnum>? sex,
-      Value<int?>? age,
+      Value<int>? age,
       Value<int>? level,
       Value<bool>? isParticipant,
       Value<int>? communityId}) {

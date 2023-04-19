@@ -12,8 +12,8 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
   }
 
   @override
-  Future<List<Member>> fetchMembers(
-    int? communityId, {
+  Future<List<Member>> fetchMembers({
+    int? communityId,
     bool? isParticipant,
   }) async {
     return await (select(members)
@@ -27,8 +27,8 @@ class MemberAccessor extends DatabaseAccessor<MyDatabase>
   }
 
   @override
-  Stream<List<Member>> watchMembers(
-    int? communityId, {
+  Stream<List<Member>> watchMembers({
+    int? communityId,
     bool? isParticipant,
   }) {
     return (select(members)

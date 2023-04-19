@@ -1,19 +1,20 @@
+import 'package:badmatch_app/business_logic/member_logic.dart';
 import 'package:badmatch_app/component/badminton_court.dart';
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
+import 'package:badmatch_app/model/advanced_member.dart';
 import 'package:badmatch_app/model/participant.dart';
-import 'package:badmatch_app/view_model/mathc_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-class MatchView extends StatefulWidget {
+class MatchPage extends StatelessWidget {
   final Community community;
   final int numCourt;
   final bool isSingle;
   final bool equalNumMatch;
   final bool closeLevel;
 
-  const MatchView({
+  const MatchPage({
     super.key,
     required this.community,
     required this.numCourt,
@@ -21,31 +22,6 @@ class MatchView extends StatefulWidget {
     required this.equalNumMatch,
     required this.closeLevel,
   });
-
-  @override
-  State<MatchView> createState() => _MatchViewState();
-}
-
-class _MatchViewState extends State<MatchView> {
-  final MatchViewModel vm = MatchViewModel();
-
-  @override
-  void didChangeDependencies() async {
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,20 +38,22 @@ class _MatchViewState extends State<MatchView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               FutureBuilder(
-                future: vm.getPlayersList(
-                  community: widget.community,
-                  numCourt: widget.numCourt,
-                  isSingle: widget.isSingle,
-                  equalNumMatch: widget.equalNumMatch,
-                  closeLevel: widget.closeLevel,
-                ),
+                future: context.read<MemberLogic>().fetchParticipantModel(
+                      community.id,
+                      numCourt: numCourt,
+                      isSingle: isSingle,
+                      equalNumMatch: equalNumMatch,
+                      closeLevel: closeLevel,
+                    ),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Container();
                   } else {
-                    Participant participant = snapshot.data!;
-                    List playersList = participant.playersList;
-                    List remainMembers = participant.remainMembers;
+                    ParticipantsModel participant = snapshot.data!;
+                    List<List<AdvancedMember>> playersList =
+                        participant.playersList;
+                    List<AdvancedMember> remainMemberList =
+                        participant.remainMemberList;
                     return Column(
                       children: [
                         SingleChildScrollView(
@@ -96,16 +74,16 @@ class _MatchViewState extends State<MatchView> {
                                     children: [
                                       Text('第${index + 1}コート'),
                                       const SizedBox(height: 10.0),
-                                      widget.isSingle
+                                      isSingle
                                           ? BadmintonCourt(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .height *
                                                   0.4,
                                               player1:
-                                                  '${playersList[index][0].name}',
+                                                  playersList[index][0].name,
                                               player3:
-                                                  '${playersList[index][1].name}',
+                                                  playersList[index][1].name,
                                             )
                                           : BadmintonCourt(
                                               height: MediaQuery.of(context)
@@ -113,13 +91,13 @@ class _MatchViewState extends State<MatchView> {
                                                       .height *
                                                   0.4,
                                               player1:
-                                                  '${playersList[index][0].name}',
+                                                  playersList[index][0].name,
                                               player2:
-                                                  '${playersList[index][1].name}',
+                                                  playersList[index][1].name,
                                               player3:
-                                                  '${playersList[index][2].name}',
+                                                  playersList[index][2].name,
                                               player4:
-                                                  '${playersList[index][3].name}',
+                                                  playersList[index][3].name,
                                             ),
                                     ],
                                   ),
@@ -128,7 +106,7 @@ class _MatchViewState extends State<MatchView> {
                             ),
                           ),
                         ),
-                        remainMembers.isEmpty
+                        remainMemberList.isEmpty
                             ? const SizedBox(
                                 height: 10.0,
                               )
@@ -141,7 +119,7 @@ class _MatchViewState extends State<MatchView> {
                                 ),
                                 child: Wrap(
                                   spacing: 10.0,
-                                  children: remainMembers
+                                  children: remainMemberList
                                       .map((e) => Text(e.name))
                                       .toList(),
                                 ),
@@ -150,10 +128,7 @@ class _MatchViewState extends State<MatchView> {
                           height: 10.0,
                         ),
                         ElevatedButton(
-                            onPressed: () {
-                              setState(() {});
-                            },
-                            child: const Text('次の組み合わせ'))
+                            onPressed: () {}, child: const Text('次の組み合わせ'))
                       ],
                     );
                   }

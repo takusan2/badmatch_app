@@ -7,7 +7,7 @@ import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/view/edit_community_page/edit_community_page.dart';
 import 'package:badmatch_app/view/home_page/home_page_state.dart';
 import 'package:badmatch_app/view/home_page/home_page_state_notifier.dart';
-import 'package:badmatch_app/view/member_view.dart';
+import 'package:badmatch_app/view/member_page/member_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -131,7 +131,7 @@ class HomePage extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return MemberView(community: community);
+                                      return MemberPage(community: community);
                                     },
                                   ),
                                 );
