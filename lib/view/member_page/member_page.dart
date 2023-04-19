@@ -3,7 +3,8 @@ import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
 import 'package:badmatch_app/model/advanced_member.dart';
-import 'package:badmatch_app/view/match_config_view.dart';
+import 'package:badmatch_app/view/edit_member_page/edit_member_page.dart';
+import 'package:badmatch_app/view/match_config_page/match_config_page.dart';
 import 'package:badmatch_app/view/member_page/member_page_state.dart';
 import 'package:badmatch_app/view/member_page/member_page_state_notifier.dart';
 import 'package:flutter/material.dart';
@@ -54,9 +55,7 @@ class _MemberPageState extends State<MemberPage> {
                     child: Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      // child: AddMemberPage(
-                      //   community: community,
-                      // ),
+                      child: const EditMemberPage(),
                     ),
                   );
                 },
@@ -77,7 +76,9 @@ class _MemberPageState extends State<MemberPage> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: StreamBuilder(
-                  stream: vm.watchCommunityAdvancedMembers(community.id),
+                  stream: context
+                      .read<MemberLogic>()
+                      .watchAdvancedMembers(community.id),
                   builder:
                       (context, AsyncSnapshot<List<AdvancedMember>> snapshot) {
                     if (!snapshot.hasData) {
@@ -169,12 +170,12 @@ class _MemberPageState extends State<MemberPage> {
                                                                         context)
                                                                     .viewInsets
                                                                     .bottom),
-                                                            // child:
-                                                            //     EditMemberPage(
-                                                            //   member:
-                                                            //       advancedMember
-                                                            //           .member,
-                                                            // ),
+                                                            child:
+                                                                EditMemberPage(
+                                                              member:
+                                                                  advancedMember
+                                                                      .member,
+                                                            ),
                                                           ),
                                                         );
                                                       },
@@ -234,7 +235,7 @@ class _MemberPageState extends State<MemberPage> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return const MatchConfigView();
+                    return const MatchConfigPage();
                   },
                 );
               },
