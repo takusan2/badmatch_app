@@ -22,7 +22,8 @@ class MatchLogic {
 
   Future<int> calNumOfMatch(int memberId) async {
     List<Match> matchList =
-        await matchRepository.fetchMatches(memberId: memberId);
+        await matchRepository.fetchTodayMemberMatches(memberId);
+    print('$memberId: $matchList');
     return matchList.length;
   }
 }

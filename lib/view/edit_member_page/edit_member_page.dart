@@ -167,9 +167,6 @@ class _EditMemberPageState extends State<EditMemberPage> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
                         widget.member != null
                             ? {
                                 await context
@@ -203,13 +200,15 @@ class _EditMemberPageState extends State<EditMemberPage> {
                                       context.read<EditMemberPageState>().age ??
                                           0,
                                   level: context
-                                      .read<EditMemberPageState>()
-                                      .level!,
+                                          .read<EditMemberPageState>()
+                                          .level ??
+                                      1,
                                   communityId: context
                                       .read<CommunityController>()
                                       .selectedCommunity
                                       .id,
-                                ));
+                                ))
+                                .then((value) => Navigator.pop(context));
                       }
                     },
                     child: const Text('完了', style: kButtonTextStyle),

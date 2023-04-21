@@ -62,10 +62,14 @@ class MemberLogic {
     bool? isParticipant,
   }) async {
     List<AdvancedMember> advancedMemberList = [];
-    for (Member member
-        in await memberRepository.fetchMembers(communityId: communityId)) {
+    for (Member member in await memberRepository.fetchMembers(
+      communityId: communityId,
+      isParticipant: isParticipant,
+    )) {
       int numMatches =
           await MatchLogic(matchRepository).calNumOfMatch(member.id);
+      print(member.name);
+      print(numMatches);
       advancedMemberList
           .add(AdvancedMember(member: member, numMatches: numMatches));
     }
@@ -119,6 +123,11 @@ class MemberLogic {
               player4Id: Value(players[3].id),
               communityId: communityId,
             ));
+    }
+    for (List<AdvancedMember> players in playersList) {
+      for (AdvancedMember player in players) {
+        print('${player.name}, ${player.numMatches}');
+      }
     }
 
     return ParticipantsModel(
