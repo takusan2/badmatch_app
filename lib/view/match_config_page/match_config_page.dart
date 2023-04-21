@@ -1,7 +1,7 @@
 import 'package:badmatch_app/controller/community_controller.dart';
 import 'package:badmatch_app/view/match_config_page/match_config_page_state.dart';
 import 'package:badmatch_app/view/match_config_page/match_config_page_state_notifier.dart';
-import 'package:badmatch_app/view/match_page.dart';
+import 'package:badmatch_app/view/match_page/match_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -113,10 +113,6 @@ class MatchConfigPage extends StatelessWidget {
                           community: Provider.of<CommunityController>(context,
                                   listen: false)
                               .selectedCommunity,
-                          numCourt: state.numCourt,
-                          isSingle: state.isSingle,
-                          equalNumMatch: state.equalNumMatch,
-                          closeLevel: state.closeLevel,
                         ),
                       ),
                     );

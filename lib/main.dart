@@ -9,6 +9,8 @@ import 'package:badmatch_app/view/home_page/home_page_state.dart';
 import 'package:badmatch_app/view/home_page/home_page_state_notifier.dart';
 import 'package:badmatch_app/view/match_config_page/match_config_page_state.dart';
 import 'package:badmatch_app/view/match_config_page/match_config_page_state_notifier.dart';
+import 'package:badmatch_app/view/match_page/match_page_state.dart';
+import 'package:badmatch_app/view/match_page/match_page_state_notifier.dart';
 import 'package:badmatch_app/view/member_page/member_page_state.dart';
 import 'package:badmatch_app/view/member_page/member_page_state_notifier.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,9 @@ void main() async {
         create: (context) => MatchConfigPageStateNotifier()),
     StateNotifierProvider<EditMemberPageStateNotifier, EditMemberPageState>(
         create: (context) => EditMemberPageStateNotifier()),
+    StateNotifierProvider<MatchPageStateNotifier, MatchPageState>(
+      create: (context) => MatchPageStateNotifier(),
+    )
   ], child: const MyApp()));
 }
 

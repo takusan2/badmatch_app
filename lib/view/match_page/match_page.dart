@@ -4,27 +4,26 @@ import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/model/advanced_member.dart';
 import 'package:badmatch_app/model/participant.dart';
+import 'package:badmatch_app/view/match_config_page/match_config_page_state.dart';
+import 'package:badmatch_app/view/match_page/match_page_state.dart';
+import 'package:badmatch_app/view/match_page/match_page_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MatchPage extends StatelessWidget {
   final Community community;
-  final int numCourt;
-  final bool isSingle;
-  final bool equalNumMatch;
-  final bool closeLevel;
 
   const MatchPage({
     super.key,
     required this.community,
-    required this.numCourt,
-    required this.isSingle,
-    required this.equalNumMatch,
-    required this.closeLevel,
   });
 
   @override
   Widget build(BuildContext context) {
+    MatchConfigPageState config = context.read<MatchConfigPageState>();
+    MatchPageState state = context.watch<MatchPageState>();
+    MatchPageStateNotifier stateNotifier =
+        context.read<MatchPageStateNotifier>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kAppBarColor,
@@ -40,10 +39,10 @@ class MatchPage extends StatelessWidget {
               FutureBuilder(
                 future: context.read<MemberLogic>().fetchParticipantModel(
                       community.id,
-                      numCourt: numCourt,
-                      isSingle: isSingle,
-                      equalNumMatch: equalNumMatch,
-                      closeLevel: closeLevel,
+                      numCourt: config.numCourt,
+                      isSingle: config.isSingle,
+                      equalNumMatch: config.equalNumMatch,
+                      closeLevel: config.closeLevel,
                     ),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -64,7 +63,9 @@ class MatchPage extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: playersList.length,
+                              itemCount:
+                                  state.participantsModel?.playersList.length ??
+                                      0,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -74,30 +75,30 @@ class MatchPage extends StatelessWidget {
                                     children: [
                                       Text('第${index + 1}コート'),
                                       const SizedBox(height: 10.0),
-                                      isSingle
+                                      config.isSingle
                                           ? BadmintonCourt(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .height *
                                                   0.4,
-                                              player1:
-                                                  playersList[index][0].name,
-                                              player3:
-                                                  playersList[index][1].name,
+                                              player1: state.participantsModel!
+                                                  .playersList[index][0].name,
+                                              player3: state.participantsModel!
+                                                  .playersList[index][1].name,
                                             )
                                           : BadmintonCourt(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .height *
                                                   0.4,
-                                              player1:
-                                                  playersList[index][0].name,
-                                              player2:
-                                                  playersList[index][1].name,
-                                              player3:
-                                                  playersList[index][2].name,
-                                              player4:
-                                                  playersList[index][3].name,
+                                              player1: state.participantsModel!
+                                                  .playersList[index][0].name,
+                                              player2: state.participantsModel!
+                                                  .playersList[index][1].name,
+                                              player3: state.participantsModel!
+                                                  .playersList[index][2].name,
+                                              player4: state.participantsModel!
+                                                  .playersList[index][3].name,
                                             ),
                                     ],
                                   ),
@@ -128,7 +129,10 @@ class MatchPage extends StatelessWidget {
                           height: 10.0,
                         ),
                         ElevatedButton(
-                            onPressed: () {}, child: const Text('次の組み合わせ'))
+                            onPressed: () {
+                              stateNotifier.setParticipantsModel(context);
+                            },
+                            child: const Text('次の組み合わせ'))
                       ],
                     );
                   }

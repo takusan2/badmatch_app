@@ -6,4 +6,5 @@ abstract class MatchRepository {
   Stream<List<Match>> watchMatches({int? memberId, int? communityId});
   Future<void> updateMatch(Match match);
   Future<void> deleteMatch(int id);
+  Future<List<Match>> fetchTodayMemberMatches(int memberId);
 }
