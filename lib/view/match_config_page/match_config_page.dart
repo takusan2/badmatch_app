@@ -1,33 +1,20 @@
 import 'package:badmatch_app/controller/community_controller.dart';
-import 'package:badmatch_app/view/match_view.dart';
-import 'package:badmatch_app/view_model/match_config_view_model.dart';
+import 'package:badmatch_app/view/match_config_page/match_config_page_state.dart';
+import 'package:badmatch_app/view/match_config_page/match_config_page_state_notifier.dart';
+import 'package:badmatch_app/view/match_page/match_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class MatchConfigView extends StatefulWidget {
-  const MatchConfigView({super.key});
+class MatchConfigPage extends StatelessWidget {
+  const MatchConfigPage({super.key});
 
-  @override
-  State<MatchConfigView> createState() => _MatchConfigViewState();
-}
-
-class _MatchConfigViewState extends State<MatchConfigView> {
-  MatchConfigViewModel vm = MatchConfigViewModel();
-
-  @override
-  void initState() {
-    super.initState();
-    Future(() async {
-      await vm.setNumParticipants(
-          Provider.of<CommunityController>(context, listen: false)
-              .selectedCommunity);
-    });
-  }
-
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    MatchConfigPageState state = context.watch<MatchConfigPageState>();
+    MatchConfigPageStateNotifier stateNotifier =
+        context.read<MatchConfigPageStateNotifier>();
     return Dialog(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -41,7 +28,7 @@ class _MatchConfigViewState extends State<MatchConfigView> {
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -55,7 +42,7 @@ class _MatchConfigViewState extends State<MatchConfigView> {
                 ],
                 onChanged: (value) {
                   if (value != '') {
-                    vm.numCourt = int.parse(value);
+                    stateNotifier.setNumCourt(int.parse(value));
                   }
                 },
                 validator: (value) {
@@ -66,10 +53,10 @@ class _MatchConfigViewState extends State<MatchConfigView> {
                       return '20以下の数字を入力してください';
                     }
 
-                    if (int.parse(value) * (vm.isSingle ? 2 : 4) >
-                        vm.numParticipants) {
-                      return '参加者に対してコート数が多いです';
-                    }
+                    // if (int.parse(value) * (state.isSingle ? 2 : 4) >
+                    //     vm.numParticipants) {
+                    //   return '参加者に対してコート数が多いです';
+                    // }
                   }
                   return null;
                 },
@@ -77,21 +64,17 @@ class _MatchConfigViewState extends State<MatchConfigView> {
               RadioListTile(
                 title: const Text('シングルス'),
                 value: true,
-                groupValue: vm.isSingle,
+                groupValue: state.isSingle,
                 onChanged: (value) {
-                  setState(() {
-                    vm.isSingle = true;
-                  });
+                  stateNotifier.toggleIsSingle(toggleTo: true);
                 },
               ),
               RadioListTile(
                 title: const Text('ダブルス'),
                 value: false,
-                groupValue: vm.isSingle,
+                groupValue: state.isSingle,
                 onChanged: (value) {
-                  setState(() {
-                    vm.isSingle = false;
-                  });
+                  stateNotifier.toggleIsSingle(toggleTo: false);
                 },
               ),
               const Divider(
@@ -104,40 +87,32 @@ class _MatchConfigViewState extends State<MatchConfigView> {
                 title: const Text('試合数平等'),
                 value: true,
                 toggleable: true,
-                groupValue: vm.equalNumMatch,
+                groupValue: state.equalNumMatch,
                 onChanged: (value) {
-                  setState(() {
-                    vm.equalNumMatch = !vm.equalNumMatch;
-                  });
+                  stateNotifier.toggleEqualNumMatch();
                 },
               ),
               RadioListTile(
                 title: const Text('レベルが近いもの同士'),
                 value: true,
                 toggleable: true,
-                groupValue: vm.closeLevel,
+                groupValue: state.closeLevel,
                 onChanged: (value) {
-                  setState(() {
-                    vm.closeLevel = !vm.closeLevel;
-                  });
+                  stateNotifier.toggleCloseLevel();
                 },
               ),
               ElevatedButton(
                 style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(Colors.orange)),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MatchView(
+                        builder: (context) => MatchPage(
                           community: Provider.of<CommunityController>(context,
                                   listen: false)
                               .selectedCommunity,
-                          numCourt: vm.numCourt,
-                          isSingle: vm.isSingle,
-                          equalNumMatch: vm.equalNumMatch,
-                          closeLevel: vm.closeLevel,
                         ),
                       ),
                     );

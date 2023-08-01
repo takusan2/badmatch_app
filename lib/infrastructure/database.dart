@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:badmatch_app/business_logic/interface/community_repository.dart';
+import 'package:badmatch_app/business_logic/interface/match_repository.dart';
+import 'package:badmatch_app/business_logic/interface/member_repository.dart';
 import 'package:badmatch_app/infrastructure/entity/communities.dart';
 import 'package:badmatch_app/infrastructure/entity/matches.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';

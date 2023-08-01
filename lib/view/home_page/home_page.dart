@@ -1,27 +1,25 @@
+import 'package:badmatch_app/business_logic/community_logic.dart';
+import 'package:badmatch_app/component/community_card.dart';
 import 'package:badmatch_app/constant/string.dart';
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/controller/community_controller.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
-import 'package:badmatch_app/view/add_community_view.dart';
-import 'package:badmatch_app/view/edit_community_view.dart';
-import 'package:badmatch_app/view/member_view.dart';
-import 'package:badmatch_app/view_model/home_view_model.dart';
+import 'package:badmatch_app/view/edit_community_page/edit_community_page.dart';
+import 'package:badmatch_app/view/home_page/home_page_state.dart';
+import 'package:badmatch_app/view/home_page/home_page_state_notifier.dart';
+import 'package:badmatch_app/view/member_page/member_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:widget_arrows/widget_arrows.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> {
-  HomeViewModel vm = HomeViewModel();
-
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
+    CommunityLogic communityLogic = context.read<CommunityLogic>();
+    HomePageState state = context.watch<HomePageState>();
+    HomePageStateNotifier stateNotifier = context.read<HomePageStateNotifier>();
     return ArrowContainer(
       child: Scaffold(
         appBar: AppBar(
@@ -34,11 +32,9 @@ class _HomeViewState extends State<HomeView> {
               padding: const EdgeInsets.only(right: 20.0),
               child: IconButton(
                 onPressed: () {
-                  setState(() {
-                    vm.editFlag = !vm.editFlag;
-                  });
+                  stateNotifier.toggleEditFlag();
                 },
-                icon: vm.editFlag
+                icon: state.editFlag
                     ? const Icon(Icons.check, color: Colors.lightBlue)
                     : const Icon(Icons.edit),
               ),
@@ -60,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
                     child: Container(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: const AddCommunityView(),
+                      child: const EditCommunityPage(),
                     ),
                   );
                 },
@@ -71,7 +67,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         body: SafeArea(
           child: StreamBuilder<List<Community>>(
-            stream: vm.watachCommunities(),
+            stream: communityLogic.watchCommunities(),
             builder: (context, AsyncSnapshot<List<Community>> snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -110,7 +106,7 @@ class _HomeViewState extends State<HomeView> {
                             children: [
                               SlidableAction(
                                 onPressed: (context) {
-                                  vm.deleteCommunity(community);
+                                  communityLogic.deleteCommunity(community.id);
                                 },
                                 backgroundColor: const Color(0xFFFE4A49),
                                 foregroundColor: Colors.white,
@@ -135,14 +131,14 @@ class _HomeViewState extends State<HomeView> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return MemberView(community: community);
+                                      return MemberPage(community: community);
                                     },
                                   ),
                                 );
                               },
                               child: CommunityCard(
                                 name: community.name,
-                                trailing: !vm.editFlag
+                                trailing: !state.editFlag
                                     ? null
                                     : IconButton(
                                         icon: const Icon(Icons.edit),
@@ -159,7 +155,7 @@ class _HomeViewState extends State<HomeView> {
                                                             .viewInsets
                                                             .bottom,
                                                   ),
-                                                  child: EditCommunityView(
+                                                  child: EditCommunityPage(
                                                     community: community,
                                                   ),
                                                 ),
@@ -181,62 +177,6 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class CommunityCard extends StatelessWidget {
-  final String name;
-  final Widget? trailing;
-  final String? sideNote;
-
-  const CommunityCard({
-    super.key,
-    required this.name,
-    this.trailing,
-    this.sideNote,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          alignment: Alignment.centerLeft,
-          constraints: const BoxConstraints(maxHeight: 50),
-          decoration: const BoxDecoration(
-            color: Color(0xFF454444),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Text(
-            name,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        Container(
-          constraints: const BoxConstraints(maxHeight: 60),
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFD6D6),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-          ),
-          child: ListTile(
-            trailing: trailing,
-          ),
-        ),
-      ],
     );
   }
 }

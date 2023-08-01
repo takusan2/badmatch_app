@@ -1,27 +1,30 @@
+import 'package:badmatch_app/business_logic/member_logic.dart';
 import 'package:badmatch_app/constant/style.dart';
 import 'package:badmatch_app/infrastructure/database.dart';
 import 'package:badmatch_app/infrastructure/entity/members.dart';
 import 'package:badmatch_app/model/advanced_member.dart';
-import 'package:badmatch_app/view/add_member_page.dart';
-import 'package:badmatch_app/view/edit_member_view.dart';
-import 'package:badmatch_app/view/match_config_view.dart';
-import 'package:badmatch_app/view_model/member_view_model.dart';
+import 'package:badmatch_app/view/edit_member_page/edit_member_page.dart';
+import 'package:badmatch_app/view/match_config_page/match_config_page.dart';
+import 'package:badmatch_app/view/member_page/member_page_state.dart';
+import 'package:badmatch_app/view/member_page/member_page_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
-class MemberView extends StatefulWidget {
+class MemberPage extends StatefulWidget {
   final Community community;
-  const MemberView({super.key, required this.community});
+  const MemberPage({super.key, required this.community});
   @override
-  State<MemberView> createState() => _MemberViewState();
+  State<MemberPage> createState() => _MemberPageState();
 }
 
-class _MemberViewState extends State<MemberView> {
-  final MemberViewModel vm = MemberViewModel();
-
+class _MemberPageState extends State<MemberPage> {
   @override
   Widget build(BuildContext context) {
+    MemberPageState state = context.watch<MemberPageState>();
+    MemberPageStateNotifier stateNotifier =
+        context.read<MemberPageStateNotifier>();
     Community community = widget.community;
     return Scaffold(
       appBar: AppBar(
@@ -34,8 +37,8 @@ class _MemberViewState extends State<MemberView> {
         actions: [
           IconButton(
               padding: const EdgeInsets.only(right: 20),
-              onPressed: () => setState(() => vm.editFlag = !vm.editFlag),
-              icon: vm.editFlag
+              onPressed: () => stateNotifier.toggleEditFlag(),
+              icon: state.editFlag
                   ? const Icon(
                       Icons.check,
                       color: Colors.lightBlue,
@@ -52,9 +55,7 @@ class _MemberViewState extends State<MemberView> {
                     child: Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: AddMemberView(
-                        community: community,
-                      ),
+                      child: const EditMemberPage(),
                     ),
                   );
                 },
@@ -75,7 +76,9 @@ class _MemberViewState extends State<MemberView> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: StreamBuilder(
-                  stream: vm.watchCommunityAdvancedMembers(community.id),
+                  stream: context
+                      .read<MemberLogic>()
+                      .watchAdvancedMembers(community.id),
                   builder:
                       (context, AsyncSnapshot<List<AdvancedMember>> snapshot) {
                     if (!snapshot.hasData) {
@@ -117,8 +120,10 @@ class _MemberViewState extends State<MemberView> {
                                     children: [
                                       SlidableAction(
                                         onPressed: (context) {
-                                          vm.deleteMember(
-                                              advancedMember.member);
+                                          context
+                                              .read<MemberLogic>()
+                                              .deleteMember(
+                                                  id: advancedMember.member.id);
                                         },
                                         backgroundColor:
                                             const Color(0xFFFE4A49),
@@ -133,7 +138,7 @@ class _MemberViewState extends State<MemberView> {
                                     color: advancedMember.sex == SexEnum.male
                                         ? Colors.blue.shade100
                                         : Colors.red.shade100,
-                                    child: vm.editFlag
+                                    child: state.editFlag
                                         ? ListTile(
                                             title: Text(
                                               'Lv.${advancedMember.level.toString()}  ${advancedMember.name}',
@@ -166,7 +171,7 @@ class _MemberViewState extends State<MemberView> {
                                                                     .viewInsets
                                                                     .bottom),
                                                             child:
-                                                                EditMemberView(
+                                                                EditMemberPage(
                                                               member:
                                                                   advancedMember
                                                                       .member,
@@ -183,12 +188,16 @@ class _MemberViewState extends State<MemberView> {
                                         : CheckboxListTile(
                                             value: advancedMember.isParticipant,
                                             onChanged: (value) async {
-                                              await vm
-                                                  .updateMemberIsParticipant(
-                                                member: advancedMember.member,
-                                                isParticipant: !advancedMember
-                                                    .isParticipant,
-                                              );
+                                              await context
+                                                  .read<MemberLogic>()
+                                                  .updateMember(
+                                                    advancedMember.member
+                                                        .copyWith(
+                                                      isParticipant:
+                                                          !advancedMember
+                                                              .isParticipant,
+                                                    ),
+                                                  );
                                             },
                                             title: Row(
                                               children: [
@@ -226,7 +235,7 @@ class _MemberViewState extends State<MemberView> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return const MatchConfigView();
+                    return const MatchConfigPage();
                   },
                 );
               },

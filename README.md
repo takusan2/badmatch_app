@@ -1,16 +1,16 @@
 # badmatch_app
+- アプリ概要
+バドミントンのダブルスやシングルスの組み合わせを自動生成するアプリ「badmatch」。
+団体ごとにメンバー管理ができるようになっており、メンバーにレベルというプロパティをつけることで、レベルが近いもの同士が当たるなどの設定ができます。
 
-A new Flutter project.
+こちらはAppStoreに出品しておりません。
 
-## Getting Started
+- アプリ機能
+団体・メンバー登録機能
+バドミントンの組み合わせ生成
+レベルの近いもの同士・試合回数平等のオプション
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<img width="610" alt="image" src="https://github.com/takuya-okada-01/badmatch_app/assets/106806920/b635d7cd-bdaa-422b-9918-83ec8059691b">
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
